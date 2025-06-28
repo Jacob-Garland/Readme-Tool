@@ -11,7 +11,7 @@ export default function Home() {
         <Box flexDirection={"column"} display="flex" mt={4} mb={4}>
             <Button maxW={"xl"} onClick={() => navigate("/new")}>New Readme</Button>
             <br />
-            <Button maxW={"xl"}>Edit A Readme</Button>
+            <Button maxW={"xl"} onClick={() => navigate("/edit")}>Edit A Readme</Button>
         </Box>
 
         <Text>Made with ❤️ by Jacob Garland</Text>

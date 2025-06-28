@@ -1,11 +1,65 @@
-import React from 'react'
-import { Box, Heading, Text } from '@chakra-ui/react'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Box, Heading, Input, Button, Fieldset, Field, Stack, NativeSelect, For, HStack } from '@chakra-ui/react';
+import BackButton from '../components/BackButton';
 
-const NewReadme: React.FC = () => (
-  <Box p={8}>
-    <Heading mb={4}>Create a New README</Heading>
-    <Text>This is where your form or wizard will go.</Text>
-  </Box>
-)
+const NewReadme: React.FC = () => {
+  const nav = useNavigate();
 
-export default NewReadme
+  const handleStart = () => {
+    const formData = { title: '', author: '', license: '' };
+    nav('/edit', { state: formData });
+  };
+
+  return (
+    <Box mx="auto" mt={10} p={4} borderWidth={1} borderRadius="lg" boxShadow="md" maxW="md">
+        <HStack mb={4} alignItems="center" justifyContent="center">
+            <BackButton />
+            <Heading textAlign={"center"} size={"3xl"}>Create A New README</Heading>
+        </HStack>
+
+            <Fieldset.Root size="lg" maxW="md">
+                <Stack mb={2}>
+                    {/* <Fieldset.Legend>Create a Readme</Fieldset.Legend> */}
+                    <Fieldset.HelperText fontSize={"md"} fontWeight={"bold"} textAlign={"center"}>
+                        Please provide some details below to get started.
+                    </Fieldset.HelperText>
+                </Stack>
+
+            <Fieldset.Content>
+                <Field.Root>
+                <Field.Label fontSize={"md"}>What is your project name?</Field.Label>
+                <Input name="title" />
+                </Field.Root>
+
+                <Field.Root>
+                <Field.Label fontSize={"md"}>Who created this project?</Field.Label>
+                <Input name="author" />
+                </Field.Root>
+
+                <Field.Root>
+                <Field.Label fontSize={"md"}>What license do you need for your project?</Field.Label>
+                <NativeSelect.Root>
+                    <NativeSelect.Field name="license">
+                    <For each={["MIT", "Apache 2.0", "GPL 3.0"]}>
+                        {(item) => (
+                        <option key={item} value={item}>
+                            {item}
+                        </option>
+                        )}
+                    </For>
+                    </NativeSelect.Field>
+                    <NativeSelect.Indicator />
+                </NativeSelect.Root>
+                </Field.Root>
+            </Fieldset.Content>
+
+            <Button type="submit" alignSelf="center" onClick={handleStart} mt={4}>
+                Start
+            </Button>
+            </Fieldset.Root>
+    </Box>
+  );
+};
+
+export default NewReadme;
