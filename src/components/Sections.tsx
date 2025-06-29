@@ -14,6 +14,9 @@ const sectionTitles = [
   "Run Locally",
   "Environment Variables",
   "Requirements",
+  "FAQ",
+  "Badges",
+  "License"
 ];
 
 interface SectionsProps {
@@ -21,16 +24,22 @@ interface SectionsProps {
 }
 
 const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
+  // Handler for blank section
+  const handleBlankSection = () => {
+    if (onSectionClick) {
+      onSectionClick('BLANK_SECTION');
+    }
+  };
   return (
     <VStack gap={2} p={4} alignItems="center">
-        <Button variant={"outline"} borderColor={"purple"} borderWidth={3} w="60%" mb={2}>
-            <Icon as={DiamondPlus} mr={6} /> Blank Section
+        <Button variant={"outline"} borderColor={"purple"} borderWidth={3} w="80%" mb={2} onClick={handleBlankSection}>
+            <Icon as={DiamondPlus} mr={1} /> Blank Section
         </Button>
       {sectionTitles.map((section) => (
         <Button
           key={section}
           colorPalette="purple"
-          w="60%"
+          w="80%"
           onClick={onSectionClick ? () => onSectionClick(section) : undefined}
         >
           {section}

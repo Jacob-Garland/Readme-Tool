@@ -7,11 +7,11 @@ export default function Home() {
     return (
         <Box display={"flex"} flexDirection="column" alignItems="center" justifyContent="center" height="100vh">
         <Heading size={"3xl"} mb={5}>
-            Welcome to the 
+            Welcome to the Ultimate
             <Highlight query={"README.md"} styles={{ px: 1, py: 0, borderRadius: "md", bg: "purple.200" }}>
                 README.md
             </Highlight> 
-            Generator!
+            Tool!
         </Heading>
 
         <Box flexDirection={"row"} display="flex" gap={8} mt={2} mb={6}>
