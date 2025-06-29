@@ -8,7 +8,7 @@ const NewReadme: React.FC = () => {
 
   const handleStart = () => {
     const formData = { title: '', author: '', license: '' };
-    nav('/edit', { state: formData });
+    nav('/editor', { state: formData });
   };
 
   return (
