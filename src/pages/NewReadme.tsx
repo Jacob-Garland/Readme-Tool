@@ -54,7 +54,7 @@ const NewReadme: React.FC = () => {
                 </Field.Root>
             </Fieldset.Content>
 
-            <Button type="submit" alignSelf="center" onClick={handleStart} mt={4}>
+            <Button type="submit" alignSelf="center" onClick={handleStart} mt={4} colorPalette={"purple"}>
                 Start
             </Button>
             </Fieldset.Root>

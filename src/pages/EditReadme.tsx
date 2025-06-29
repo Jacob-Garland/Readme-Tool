@@ -61,6 +61,7 @@ const EditReadme: React.FC = () => {
                 onClick={handleGoToEditor}
                 mt={4}
                 disabled={!uploadedFile}
+                colorScheme="purple"
             >
                 Continue to Editor
             </Button>
