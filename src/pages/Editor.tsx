@@ -4,23 +4,28 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
 import Sections from "../components/Sections";
+import Selections from "../components/Selections";
 import { useTemplates } from "../hooks/useTemplates";
 
 const Editor = () => {
     const [raw, setRaw] = useState<string>("");
+    const [selectedSections, setSelectedSections] = useState<string[]>([]);
     const { getTemplate } = useTemplates();
 
     // Handler to append a section template to the raw editor
     const handleAddSection = (section: string) => {
         let template = "";
+        let sectionTitle = section;
         if (section === "BLANK_SECTION") {
-            template = `\n\n## New Section\n\nType or add your section here.\n\n`;
+            template = `\n\n## New Custom Section\n\nType or add your section here.\n\n`;
+            sectionTitle = "New Custom Section";
         } else {
             template = getTemplate(section);
             // Ensure a blank line after each section
             if (!template.endsWith("\n\n")) template = template.trimEnd() + "\n\n";
         }
         setRaw((prev) => prev + (prev && !prev.endsWith("\n") ? "\n\n" : "") + template);
+        setSelectedSections((prev) => prev.includes(sectionTitle) ? prev : [...prev, sectionTitle]);
     };
 
     return (
@@ -91,12 +96,11 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Heading size="lg" textAlign="center" mt={2}>
-                                        My Current Sections
+                                    <Heading size="lg" textAlign="center" mt={2} mb={4}>
+                                        Selected Sections
                                     </Heading>
-                                    <Text textAlign="center" mb={4}>
-                                        WIP
-                                    </Text>
+                                    
+                                    <Selections selectedSections={selectedSections} />
                                 </Box>
                             </HStack>
                         </Tabs.Content>
