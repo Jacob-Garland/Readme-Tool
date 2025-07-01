@@ -124,7 +124,7 @@ const Editor = () => {
                                     boxShadow="md"
                                 >
                                     <Heading size="xl" textAlign="center" mt={2} mb={4}>
-                                        <CopyButton /> <ResetButton onReset={handleReset} />
+                                        <CopyButton value={raw} /> <ResetButton onReset={handleReset} />
                                     </Heading>
                                     
                                     <Selections
