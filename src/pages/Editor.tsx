@@ -49,6 +49,12 @@ const Editor = () => {
         setCheckedSections([]);
     };
 
+    // Handler for drag-and-drop reorder
+    const handleReorderSections = (newOrder: string[]) => {
+        setSelectedSections(newOrder);
+        // Optionally, reorder checkedSections to match new order (or leave as is)
+    };
+
     return (
         <>
         <Header />
@@ -121,7 +127,12 @@ const Editor = () => {
                                         <CopyButton /> <ResetButton onReset={handleReset} />
                                     </Heading>
                                     
-                                    <Selections selectedSections={selectedSections} checkedSections={checkedSections} onToggle={handleToggleSection} />
+                                    <Selections
+                                        selectedSections={selectedSections}
+                                        checkedSections={checkedSections}
+                                        onToggle={handleToggleSection}
+                                        onReorder={handleReorderSections}
+                                    />
                                 </Box>
                             </HStack>
                         </Tabs.Content>

@@ -34,7 +34,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
   };
   return (
     <VStack gap={2} p={4} alignItems="center">
-        <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection}>
+        <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection} fontSize={"md"}>
             <Icon as={DiamondPlus} mr={1} /> Blank Section
         </Button>
       {sectionTitles.map((section) => (
@@ -43,6 +43,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
           colorPalette="purple"
           w="80%"
           onClick={onSectionClick ? () => onSectionClick(section) : undefined}
+          fontSize={"md"}
         >
           {section}
         </Button>
