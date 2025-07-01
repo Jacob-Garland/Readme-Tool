@@ -115,7 +115,7 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Heading size="lg" textAlign="center" mt={2} mb={4}>
+                                    <Heading size="xl" textAlign="center" mt={2} mb={4}>
                                         Selected Sections <ResetButton onReset={handleReset} />
                                     </Heading>
                                     
@@ -162,10 +162,10 @@ const Editor = () => {
                 bg={"purple.100"} 
                 overflowY={"auto"}
             >
-                <Heading size="lg" textAlign="center" mt={2}>
+                <Heading size="xl" textAlign="center" mt={2}>
                     Add A Section
                 </Heading>
-                <Box textAlign="center" mb={4}>
+                <Box textAlign="center" mb={2}>
                     <Text>Click on a section to add it to your README.md</Text>
                 </Box>
 

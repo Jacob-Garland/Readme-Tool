@@ -11,12 +11,14 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
     <VStack align="stretch" gap={3}>
       {selectedSections.map((title) => (
         <CheckboxCard.Root 
-          key={title}
-          size={"md"}
-          colorPalette={"purple"}
-          variant={"surface"}
-          checked={checkedSections.includes(title)}
-          onCheckedChange={() => onToggle(title)}
+            key={title}
+            size={"md"}
+            colorPalette={"gray"}
+            variant={"surface"}
+            borderWidth={2}
+            borderColor={"purple.500"}
+            checked={checkedSections.includes(title)}
+            onCheckedChange={() => onToggle(title)}
         >
           <CheckboxCard.HiddenInput />
           <CheckboxCard.Control>

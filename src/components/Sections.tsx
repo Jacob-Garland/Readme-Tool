@@ -32,7 +32,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
   };
   return (
     <VStack gap={2} p={4} alignItems="center">
-        <Button variant={"outline"} borderColor={"purple"} borderWidth={3} w="80%" mb={2} onClick={handleBlankSection}>
+        <Button variant={"outline"} borderColor={"purple"} borderWidth={3} w="80%" mb={4} onClick={handleBlankSection}>
             <Icon as={DiamondPlus} mr={1} /> Blank Section
         </Button>
       {sectionTitles.map((section) => (
