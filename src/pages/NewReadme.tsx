@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Heading, Input, Button, Fieldset, Field, Stack, NativeSelect, For, HStack, Checkbox } from '@chakra-ui/react';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 
 const NewReadme: React.FC = () => {
   const nav = useNavigate();

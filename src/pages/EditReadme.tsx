@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Heading, HStack, FileUpload, Icon, Code, Text, Button } from '@chakra-ui/react';
-import BackButton from '../components/BackButton';
+import BackButton from '../components/ui/BackButton';
 import { Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 

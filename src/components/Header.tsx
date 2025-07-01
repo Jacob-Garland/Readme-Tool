@@ -1,6 +1,6 @@
 import { Box, Flex, Heading, IconButton, Link, Code } from '@chakra-ui/react';
 import { Github } from 'lucide-react';
-import BackButton from './BackButton';
+import BackButton from './ui/BackButton';
 
 const Header = () => {
     return (

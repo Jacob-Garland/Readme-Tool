@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, useClipboard } from '@chakra-ui/react';
 import { Copy } from 'lucide-react';
-import { toaster } from './ui/toaster';
+import { toaster } from './toaster';
 
 interface CopyButtonProps {
   value: string;

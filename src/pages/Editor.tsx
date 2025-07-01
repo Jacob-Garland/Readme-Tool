@@ -6,9 +6,9 @@ import Header from "@/components/Header";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
 import { useTemplates } from "../hooks/useTemplates";
-import ResetButton from "@/components/ResetButton";
-import CopyButton from "@/components/CopyButton";
-import DownloadButton from "@/components/DownloadButton";
+import ResetButton from "@/components/ui/ResetButton";
+import CopyButton from "@/components/ui/CopyButton";
+import DownloadButton from "@/components/ui/DownloadButton";
 
 const Editor = () => {
     const [raw, setRaw] = useState<string>("");

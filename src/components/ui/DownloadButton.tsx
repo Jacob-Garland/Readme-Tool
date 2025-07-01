@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton } from '@chakra-ui/react';
 import { FileDown } from 'lucide-react';
-import { toaster } from './ui/toaster';
+import { toaster } from './toaster';
 
 const DownloadButton: React.FC = () => {
     const handleDownload = () => {
