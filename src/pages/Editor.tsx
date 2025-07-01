@@ -6,10 +6,12 @@ import Header from "@/components/Header";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
 import { useTemplates } from "../hooks/useTemplates";
+import ResetButton from "@/components/ResetButton";
 
 const Editor = () => {
     const [raw, setRaw] = useState<string>("");
     const [selectedSections, setSelectedSections] = useState<string[]>([]);
+    const [checkedSections, setCheckedSections] = useState<string[]>([]);
     const { getTemplate } = useTemplates();
 
     // Handler to append a section template to the raw editor
@@ -21,11 +23,28 @@ const Editor = () => {
             sectionTitle = "New Custom Section";
         } else {
             template = getTemplate(section);
-            // Ensure a blank line after each section
+            // Ensures a blank line after each section
             if (!template.endsWith("\n\n")) template = template.trimEnd() + "\n\n";
         }
         setRaw((prev) => prev + (prev && !prev.endsWith("\n") ? "\n\n" : "") + template);
         setSelectedSections((prev) => prev.includes(sectionTitle) ? prev : [...prev, sectionTitle]);
+        setCheckedSections((prev) => prev.includes(sectionTitle) ? prev : [...prev, sectionTitle]);
+    };
+
+    // Handler for toggling checked state
+    const handleToggleSection = (title: string) => {
+        setCheckedSections((prev) =>
+            prev.includes(title)
+                ? prev.filter((t) => t !== title)
+                : [...prev, title]
+        );
+    };
+
+    // Handler for reset button
+    const handleReset = () => {
+        setRaw("");
+        setSelectedSections([]);
+        setCheckedSections([]);
     };
 
     return (
@@ -97,10 +116,10 @@ const Editor = () => {
                                     boxShadow="md"
                                 >
                                     <Heading size="lg" textAlign="center" mt={2} mb={4}>
-                                        Selected Sections
+                                        Selected Sections <ResetButton onReset={handleReset} />
                                     </Heading>
                                     
-                                    <Selections selectedSections={selectedSections} />
+                                    <Selections selectedSections={selectedSections} checkedSections={checkedSections} onToggle={handleToggleSection} />
                                 </Box>
                             </HStack>
                         </Tabs.Content>

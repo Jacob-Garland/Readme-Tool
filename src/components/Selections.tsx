@@ -2,9 +2,11 @@ import { CheckboxCard, VStack } from "@chakra-ui/react";
 
 interface SelectionsProps {
   selectedSections: string[];
+  checkedSections: string[];
+  onToggle: (title: string) => void;
 }
 
-const Selections: React.FC<SelectionsProps> = ({ selectedSections }) => {
+const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle }) => {
   return (
     <VStack align="stretch" gap={3}>
       {selectedSections.map((title) => (
@@ -13,8 +15,8 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections }) => {
           size={"md"}
           colorPalette={"purple"}
           variant={"surface"}
-          defaultChecked={true}
-          readOnly
+          checked={checkedSections.includes(title)}
+          onCheckedChange={() => onToggle(title)}
         >
           <CheckboxCard.HiddenInput />
           <CheckboxCard.Control>

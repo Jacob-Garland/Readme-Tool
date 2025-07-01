@@ -10,6 +10,7 @@ const BackButton: React.FC = () => {
       aria-label="Back to Home"
       onClick={() => navigate('/')}
       variant="solid"
+      colorPalette={"purple"}
       size="md"
       p={2}
       mr={4}

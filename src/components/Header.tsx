@@ -1,5 +1,6 @@
 import { Box, Flex, Heading, IconButton, Button, Link, Code } from '@chakra-ui/react';
 import { Github } from 'lucide-react';
+import BackButton from './BackButton';
 
 const Header = () => {
     return (
@@ -23,8 +24,8 @@ const Header = () => {
         
                 {/* Right: Save and Reset buttons */}
                 <Flex gap={2}>
+                    <BackButton />
                     <Button colorPalette={"purple"}>Save</Button>
-                    <Button colorPalette={"purple"}>Reset</Button>
                 </Flex>
             </Flex>
         </Box>
