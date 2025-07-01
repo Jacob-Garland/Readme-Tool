@@ -18,7 +18,9 @@ const sectionTitles = [
   "Requirements",
   "FAQ",
   "Badges",
-  "License"
+  "License",
+  "Video",
+  "Youtube Video"
 ];
 
 interface SectionsProps {

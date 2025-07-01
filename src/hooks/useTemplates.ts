@@ -16,7 +16,9 @@ const templates: Record<string, string> = {
     Requirements: `## Requirements\n\nList requirements for the project, if any.\n`,
     FAQ: `## FAQ\n\nFrequently Asked Questions.\n\nYou can add common questions and answers here to help users understand your project better.\n\n1. **Question 1**: Answer to question 1.\n2. **Question 2**: Answer to question 2.\n3. **Question 3**: Answer to question 3.\n`,
     Badges: `## Badges\n\nAdd badges here for your project.\n\nCheck out the badges hosted by [shields.io](https://shields.io/).\n`,
-    License: `## License\n\nThis project is licensed under the [NAME HERE] License\nPlease refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`
+    License: `## License\n\nThis project is licensed under the [NAME HERE] License\nPlease refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`,
+    Video: `[![Video Title](path/to/thumbnail.jpg)](path/to/video.mp4)\n`,
+    "Youtube Video": `[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)\n`
 };
 
 export function useTemplates() {
