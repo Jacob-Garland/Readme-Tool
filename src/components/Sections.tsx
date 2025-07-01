@@ -3,6 +3,7 @@ import { Button, VStack, Icon } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 
 const sectionTitles = [
+  "Title",
   "Introduction",
   "Installation",
   "Usage",
@@ -32,7 +33,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
   };
   return (
     <VStack gap={2} p={4} alignItems="center">
-        <Button variant={"outline"} borderColor={"purple"} borderWidth={3} w="80%" mb={4} onClick={handleBlankSection}>
+        <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection}>
             <Icon as={DiamondPlus} mr={1} /> Blank Section
         </Button>
       {sectionTitles.map((section) => (

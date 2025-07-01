@@ -7,6 +7,7 @@ import Sections from "../components/Sections";
 import Selections from "../components/Selections";
 import { useTemplates } from "../hooks/useTemplates";
 import ResetButton from "@/components/ResetButton";
+import CopyButton from "@/components/CopyButton";
 
 const Editor = () => {
     const [raw, setRaw] = useState<string>("");
@@ -116,7 +117,7 @@ const Editor = () => {
                                     boxShadow="md"
                                 >
                                     <Heading size="xl" textAlign="center" mt={2} mb={4}>
-                                        Selected Sections <ResetButton onReset={handleReset} />
+                                        <CopyButton /> <ResetButton onReset={handleReset} />
                                     </Heading>
                                     
                                     <Selections selectedSections={selectedSections} checkedSections={checkedSections} onToggle={handleToggleSection} />
@@ -163,7 +164,7 @@ const Editor = () => {
                 overflowY={"auto"}
             >
                 <Heading size="xl" textAlign="center" mt={2}>
-                    Add A Section
+                    Select A Section
                 </Heading>
                 <Box textAlign="center" mb={2}>
                     <Text>Click on a section to add it to your README.md</Text>
