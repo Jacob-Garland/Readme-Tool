@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Button, Heading, Highlight, Text } from "@chakra-ui/react";
+import { Box, Button, Code, Heading, Highlight, Text } from "@chakra-ui/react";
 
 export default function Home() {
     const navigate = useNavigate();
@@ -14,10 +14,10 @@ export default function Home() {
             Tool!
         </Heading>
 
-        <Box flexDirection={"row"} display="flex" gap={8} mt={2} mb={6}>
-            <Button onClick={() => navigate("/new")} size={"xl"} colorPalette={"purple"}>New Readme</Button>
-            <br />
-            <Button onClick={() => navigate("/edit")} colorPalette={"purple"} size={"xl"}>Edit A Readme</Button>
+        <Box flexDirection={"row"} display="flex" justifyContent="space-between" gap={8} mt={2} mb={6}>
+            <Button onClick={() => navigate("/new")} size={"xl"} colorPalette={"purple"}>New <Code>README.md</Code></Button>
+            <Button onClick={() => navigate("/edit")} colorPalette={"purple"} size={"xl"} disabled>Edit A <Code>README.md</Code></Button>
+            <Button colorPalette={"purple"} size={"xl"} disabled>New GitHub Profile README</Button>
         </Box>
 
         <Text>Made with ❤️ by Jacob Garland</Text>

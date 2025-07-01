@@ -8,6 +8,7 @@ import Selections from "../components/Selections";
 import { useTemplates } from "../hooks/useTemplates";
 import ResetButton from "@/components/ResetButton";
 import CopyButton from "@/components/CopyButton";
+import DownloadButton from "@/components/DownloadButton";
 
 const Editor = () => {
     const [raw, setRaw] = useState<string>("");
@@ -139,17 +140,18 @@ const Editor = () => {
                                 animationDuration: "120ms",
                             }}
                         >
-                            <Box minH="300px" overflowY="auto" borderRadius="md" bg={"gray.100"} p={4} boxShadow="md">
+                            <DownloadButton />
+                            <Box minH="300px" maxW={"80%"} borderRadius="md" bg={"gray.100"} p={4} boxShadow="md">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                                     {raw}
                                 </ReactMarkdown>
-                            </Box>
+                            </Box>    
                         </Tabs.Content>
                     </Tabs.ContentGroup>
                 </Tabs.Root>
             </Box>
 
-            {/* Right column for Sections Menu */}
+            {/* Right column for "Select A Section" Menu */}
             <Box w={["100%", "100%", "20%"]}
                 minW={0}
                 boxShadow={"lg"}
@@ -166,7 +168,7 @@ const Editor = () => {
                 <Heading size="xl" textAlign="center" mt={2}>
                     Select A Section
                 </Heading>
-                <Box textAlign="center" mb={2}>
+                <Box textAlign="center" mb={2} fontSize="sm">
                     <Text>Click on a section to add it to your README.md</Text>
                 </Box>
 
