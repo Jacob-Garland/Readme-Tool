@@ -1,65 +1,66 @@
 import { Tabs, Box, Textarea, Flex, Heading, Text, HStack } from "@chakra-ui/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
-import { useTemplates } from "../hooks/useTemplates";
 import ResetButton from "@/components/ui/ResetButton";
 import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
+import { templates } from "../utils/templates";
+
+export type SectionType = {
+  id: string;
+  title: string;
+  content: string;
+};
 
 const Editor = () => {
-    const [raw, setRaw] = useState<string>("");
-    const [selectedSections, setSelectedSections] = useState<string[]>([]);
+    const [sections, setSections] = useState<SectionType[]>([]);
     const [checkedSections, setCheckedSections] = useState<string[]>([]);
-    const { getTemplate } = useTemplates();
+    const [markdown, setMarkdown] = useState<string>("");
 
-    // Handler to append a section template to the raw editor
-    const handleAddSection = (section: string) => {
-        let template = "";
-        let sectionTitle = section;
-        if (section === "BLANK_SECTION") {
-            template = `\n\n## New Custom Section\n\nType or add your section here.\n\n`;
-            sectionTitle = "New Custom Section";
-        } else {
-            template = getTemplate(section);
-            // Ensures a blank line after each section
-            if (!template.endsWith("\n\n")) template = template.trimEnd() + "\n\n";
-        }
-        setRaw((prev) => prev + (prev && !prev.endsWith("\n") ? "\n\n" : "") + template);
-        setSelectedSections((prev) => prev.includes(sectionTitle) ? prev : [...prev, sectionTitle]);
-        setCheckedSections((prev) => prev.includes(sectionTitle) ? prev : [...prev, sectionTitle]);
+    // Add section by id
+    const handleAddSection = (sectionId: string) => {
+        const template = templates.find(t => t.id === sectionId);
+        if (!template) return;
+        setSections(prev => [...prev, template]);
+        setCheckedSections(prev => prev.includes(sectionId) ? prev : [...prev, sectionId]);
     };
 
-    // Handler for toggling checked state
-    const handleToggleSection = (title: string) => {
-        setCheckedSections((prev) =>
-            prev.includes(title)
-                ? prev.filter((t) => t !== title)
-                : [...prev, title]
+    // Toggle checked state
+    const handleToggleSection = (id: string) => {
+        setCheckedSections(prev =>
+            prev.includes(id)
+                ? prev.filter(t => t !== id)
+                : [...prev, id]
         );
     };
 
-    // Handler for reset button
-    const handleReset = () => {
-        setRaw("");
-        setSelectedSections([]);
-        setCheckedSections([]);
+    // Reorder sections
+    const handleReorderSections = (newOrder: string[]) => {
+        setSections(prev => {
+            const idToSection = Object.fromEntries(prev.map(s => [s.id, s]));
+            return newOrder.map(id => idToSection[id]).filter(Boolean);
+        });
     };
 
-    // Handler for drag-and-drop reorder
-    const handleReorderSections = (newOrder: string[]) => {
-        setSelectedSections(newOrder);
-        // Optionally, reorder checkedSections to match new order (or leave as is)
+    // Reset all
+    const handleReset = () => {
+        setSections([]);
+        setCheckedSections([]);
+        setMarkdown("");
     };
+
+    // Update markdown when sections change
+    useEffect(() => {
+        setMarkdown(sections.map(s => s.content).join("\n\n"));
+    }, [sections]);
 
     return (
         <>
         <Header />
-
-        {/* Tabs/Editor area */}
         <Flex w="100%" px={[0, 2, 6]} py={2} direction={["column", "row"]} align="flex-start" justify="center" gap={4} flex="1 1 0%" minH="0">
             <Box
                 w={["100%", "100%", "80%"]}
@@ -101,8 +102,8 @@ const Editor = () => {
                         >
                             <HStack justifyContent={"space-between"}>
                                 <Textarea
-                                    value={raw}
-                                    onChange={(e) => setRaw(e.target.value)}
+                                    value={markdown}
+                                    onChange={(e) => setMarkdown(e.target.value)}
                                     h="77vh"
                                     minH="300px"
                                     w="75%"
@@ -124,11 +125,10 @@ const Editor = () => {
                                     boxShadow="md"
                                 >
                                     <Heading size="xl" textAlign="center" mt={2} mb={4}>
-                                        <CopyButton value={raw} /> <ResetButton onReset={handleReset} />
+                                        <CopyButton value={markdown} /> <ResetButton onReset={handleReset} />
                                     </Heading>
-                                    
                                     <Selections
-                                        selectedSections={selectedSections}
+                                        selectedSections={sections.map(s => s.id)}
                                         checkedSections={checkedSections}
                                         onToggle={handleToggleSection}
                                         onReorder={handleReorderSections}
@@ -154,15 +154,13 @@ const Editor = () => {
                             <DownloadButton />
                             <Box minH="300px" maxW={"80%"} borderRadius="md" bg={"gray.100"} p={4} boxShadow="md">
                                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                    {raw}
+                                    {markdown}
                                 </ReactMarkdown>
-                            </Box>    
+                            </Box>
                         </Tabs.Content>
                     </Tabs.ContentGroup>
                 </Tabs.Root>
             </Box>
-
-            {/* Right column for "Select A Section" Menu */}
             <Box w={["100%", "100%", "20%"]}
                 minW={0}
                 boxShadow={"lg"}
@@ -182,7 +180,6 @@ const Editor = () => {
                 <Box textAlign="center" mb={2} fontSize="sm">
                     <Text>Click on a section to add it to your README.md</Text>
                 </Box>
-
                 <Sections onSectionClick={handleAddSection} />
             </Box>
         </Flex>
