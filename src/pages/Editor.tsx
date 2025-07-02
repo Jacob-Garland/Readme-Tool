@@ -25,7 +25,13 @@ const Editor = () => {
     const handleAddSection = (sectionId: string) => {
         const template = templates.find(t => t.id === sectionId);
         if (!template) return;
-        setSections(prev => [...prev, template]);
+
+        const newSection = {
+            id: template.id,
+            title: template.title,
+            content: template.content
+        };
+        setSections(prev => [...prev, newSection]);
         setCheckedSections(prev => prev.includes(sectionId) ? prev : [...prev, sectionId]);
     };
 
@@ -53,9 +59,12 @@ const Editor = () => {
         setMarkdown("");
     };
 
+    // This is used to separate sections in the markdown output
+    const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter
+
     // Update markdown when sections change
     useEffect(() => {
-        setMarkdown(sections.map(s => s.content).join("\n\n"));
+        setMarkdown(sections.map(s => s.content).join(SECTION_DELIMITER));
     }, [sections]);
 
     return (
@@ -103,7 +112,14 @@ const Editor = () => {
                             <HStack justifyContent={"space-between"}>
                                 <Textarea
                                     value={markdown}
-                                    onChange={(e) => setMarkdown(e.target.value)}
+                                    onChange={(e) => {
+                                        const newContents = e.target.value.split(SECTION_DELIMITER);
+                                        setSections(prevSections =>
+                                        prevSections.map((section, idx) => ({
+                                            ...section,
+                                            content: newContents[idx] !== undefined ? newContents[idx].replaceAll(SECTION_DELIMITER, "") : ""
+                                        }))
+                                    );}}
                                     h="77vh"
                                     minH="300px"
                                     w="75%"

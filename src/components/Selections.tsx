@@ -1,5 +1,5 @@
 import { CheckboxCard, VStack, IconButton } from "@chakra-ui/react";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical } from 'lucide-react';
@@ -56,13 +56,14 @@ function DraggableCard({ id, checked, onToggle, children }: { id: string; checke
 const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder }) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleDragEnd = (event: any) => {
+  const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    if (active.id !== over.id) {
-      const oldIndex = selectedSections.indexOf(active.id);
-      const newIndex = selectedSections.indexOf(over.id);
-      onReorder(arrayMove(selectedSections, oldIndex, newIndex));
-    }
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = selectedSections.findIndex(id => id === active.id);
+    const newIndex = selectedSections.findIndex(id => id === over.id);
+    const newOrder = arrayMove(selectedSections, oldIndex, newIndex);
+    onReorder(newOrder);
   };
 
   return (

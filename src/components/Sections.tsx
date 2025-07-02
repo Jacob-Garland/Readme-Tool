@@ -31,7 +31,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
   // Handler for blank section
   const handleBlankSection = () => {
     if (onSectionClick) {
-      onSectionClick('BLANK_SECTION');
+      onSectionClick('Blank Section');
     }
   };
   return (

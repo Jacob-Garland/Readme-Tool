@@ -1,6 +1,6 @@
 export const templates = [
   {
-    id: "BLANK_SECTION",
+    id: "Blank Section",
     title: "New Custom Section",
     content: `\n\n## New Custom Section\n\nType or add your section here.\n\n`
   },
