@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, VStack, Icon } from "@chakra-ui/react";
+import { Button, VStack, Icon, Box, Heading, Text } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 
 const sectionTitles = [
@@ -35,22 +35,43 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
     }
   };
   return (
-    <VStack gap={2} p={4} alignItems="center">
-        <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection} fontSize={"md"}>
-            <Icon as={DiamondPlus} mr={1} /> Blank Section
-        </Button>
-      {sectionTitles.map((section) => (
-        <Button
-          key={section}
-          colorPalette="purple"
-          w="80%"
-          onClick={onSectionClick ? () => onSectionClick(section) : undefined}
-          fontSize={"md"}
-        >
-          {section}
-        </Button>
-      ))}
-    </VStack>
+    <Box w={["100%", "100%", "20%"]}
+        minW={0}
+        boxShadow={"lg"}
+        borderRadius={"md"}
+        h={["auto", "auto", "calc(100vh - 120px)"]}
+        maxH={["none", "none", "calc(100vh - 120px)"]}
+        display="flex"
+        flexDirection="column"
+        overflow="hidden" 
+        p={4} 
+        bg={"purple.100"} 
+        overflowY={"auto"}
+    >
+        <Heading size="xl" textAlign="center" mt={2}>
+            Select A Section
+        </Heading>
+        <Box textAlign="center" mb={2} fontSize="sm">
+            <Text>Click on a section to add it to your README.md</Text>
+        </Box>
+        
+            <VStack gap={2} p={4} alignItems="center">
+                <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection} fontSize={"md"}>
+                    <Icon as={DiamondPlus} mr={1} /> Blank Section
+                </Button>
+            {sectionTitles.map((section) => (
+                <Button
+                key={section}
+                colorPalette="purple"
+                w="80%"
+                onClick={onSectionClick ? () => onSectionClick(section) : undefined}
+                fontSize={"md"}
+                >
+                {section}
+                </Button>
+            ))}
+            </VStack>
+    </Box>
   );
 };
 

@@ -17,7 +17,7 @@ const ResetButton: React.FC<ResetButtonProps> = ({ onReset }) => {
             p={2}
             ml={4}
         >
-            <ListRestart /> Clear File
+            <ListRestart /> Reset File
         </IconButton>
   );
 };

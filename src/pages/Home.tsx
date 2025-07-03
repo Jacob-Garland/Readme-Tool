@@ -20,7 +20,7 @@ export default function Home() {
             <Button colorPalette={"purple"} size={"xl"} disabled>New GitHub Profile README</Button>
         </Box>
 
-        <Text>Made with ❤️ by Jacob Garland, with help from:</Text>
+        <Text>Made with ❤️ by Jacob Garland, with these tools:</Text>
         <HStack p={2} mt={2}>
             <Image src="../../public/tauri.svg" alt="Tauri Logo" boxSize={"60px"} fit={"contain"}/>
             <Image src="../../public/react.svg" alt="React Logo" boxSize={"60px"} fit={"contain"}/>
