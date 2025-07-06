@@ -9,6 +9,7 @@ import ResetButton from "@/components/ui/ResetButton";
 import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
 import { templates } from "../utils/templates";
+import { useAutosave } from "@/hooks/useAutosave";
 
 export type SectionType = {
   id: string;
@@ -60,12 +61,15 @@ const Editor = () => {
         };
 
     // This is used to separate sections in the markdown output
-    const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter
+    const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter for now
 
     // Update markdown when sections change
     useEffect(() => {
         setMarkdown(sections.map(s => s.content).join(SECTION_DELIMITER));
     }, [sections]);
+
+    // Autosave hook to save sections periodically
+    useAutosave(sections, setSections);
 
     return (
         <>
