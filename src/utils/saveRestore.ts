@@ -7,7 +7,6 @@ export type Section = {
   content: string;
 };
 
-
 const FILE_NAME = 'readme-draft.json';
 const FILE_PATH = FILE_NAME; // For tauri-fs, path is just the filename in AppData
 const BASE_DIR = BaseDirectory.AppData;

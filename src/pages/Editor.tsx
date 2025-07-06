@@ -73,7 +73,7 @@ const Editor = () => {
 
     return (
         <>
-        <Header />
+        <Header sections={sections} />
         <Flex w="100%" px={[0, 2, 6]} py={2} direction={["column", "row"]} align="flex-start" justify="center" gap={4} flex="1 1 0%" minH="0">
             <Box
                 w={["100%", "100%", "80%"]}
