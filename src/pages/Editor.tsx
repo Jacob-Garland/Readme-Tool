@@ -1,5 +1,6 @@
 import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
@@ -28,22 +29,36 @@ export type SectionType = {
 };
 
 const Editor = () => {
+    const location = useLocation();
     const [sections, setSections] = useState<SectionType[]>([]);
     const [checkedSections, setCheckedSections] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
 
-
-    // Load state from Tauri Store on mount
+    // On mount, check for state from NewReadme and initialize sections if present
     useEffect(() => {
-        (async () => {
-            const loadedSections = await loadSections();
-            const loadedChecked = await loadCheckedSections();
-            const loadedGitView = await loadGitView();
-            if (loadedSections) setSections(loadedSections);
-            if (loadedChecked) setCheckedSections(loadedChecked);
-            if (typeof loadedGitView === "boolean") setIsGitView(loadedGitView);
-        })();
+        // If coming from NewReadme with state, use it to prefill sections
+        if (location.state && (location.state.markdownSections || location.state.selections)) {
+            const { markdownSections = [], selections = [] } = location.state as any;
+            // Map selections and markdownSections to SectionType[]
+            const newSections: SectionType[] = selections.map((sel: string, idx: number) => ({
+                id: sel,
+                title: sel,
+                content: markdownSections[idx] || ""
+            }));
+            setSections(newSections);
+            setCheckedSections(selections);
+        } else {
+            // Load state from Tauri Store on mount
+            (async () => {
+                const loadedSections = await loadSections();
+                const loadedChecked = await loadCheckedSections();
+                const loadedGitView = await loadGitView();
+                if (loadedSections) setSections(loadedSections);
+                if (loadedChecked) setCheckedSections(loadedChecked);
+                if (typeof loadedGitView === "boolean") setIsGitView(loadedGitView);
+            })();
+        }
     }, []);
 
     // Save sections to store when sections change

@@ -34,6 +34,7 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
       onSectionClick('Blank Section');
     }
   };
+  
   return (
     <Box w={["100%", "100%", "20%"]}
         minW={0}
