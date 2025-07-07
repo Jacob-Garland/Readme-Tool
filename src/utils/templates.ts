@@ -80,6 +80,11 @@ export const templates = [
     content: `## Badges\n\nAdd badges here for your project.\n\nCheck out the badges hosted by [shields.io](https://shields.io/).\n`
   },
   {
+    id: "Table of Contents",
+    title: "Table of Contents",
+    content: `## Table of Contents\n\n- [License](#license)\n- [Credits](#credits)\n\n`
+  },
+  {
     id: "License",
     title: "License",
     content: `## License\n\nThis project is licensed under the [NAME HERE] License. Please refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`

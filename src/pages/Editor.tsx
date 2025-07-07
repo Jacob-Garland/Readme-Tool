@@ -1,5 +1,5 @@
 import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -12,6 +12,7 @@ import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
 import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
+import DynamicTOC from "../components/DynamicTOC";
 import {
   saveSections,
   loadSections,
@@ -35,12 +36,23 @@ const Editor = () => {
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
 
+    // Helper to update the TOC section content dynamically
+    const updateTOCSection = useCallback((tocMarkdown: string) => {
+        setSections(prevSections => {
+            const idx = prevSections.findIndex(s => s.id === "Table of Contents");
+            if (idx === -1) return prevSections;
+            // Only update if content is different
+            if (prevSections[idx].content === tocMarkdown) return prevSections;
+            const updated = [...prevSections];
+            updated[idx] = { ...updated[idx], content: tocMarkdown };
+            return updated;
+        });
+    }, []);
+
     // On mount, check for state from NewReadme and initialize sections if present
     useEffect(() => {
-        // If coming from NewReadme with state, use it to prefill sections
         if (location.state && (location.state.markdownSections || location.state.selections)) {
             const { markdownSections = [], selections = [] } = location.state as any;
-            // Map selections and markdownSections to SectionType[]
             const newSections: SectionType[] = selections.map((sel: string, idx: number) => ({
                 id: sel,
                 title: sel,
@@ -49,7 +61,6 @@ const Editor = () => {
             setSections(newSections);
             setCheckedSections(selections);
         } else {
-            // Load state from Tauri Store on mount
             (async () => {
                 const loadedSections = await loadSections();
                 const loadedChecked = await loadCheckedSections();
@@ -132,9 +143,20 @@ const Editor = () => {
         setMarkdown(checked.map(s => s.content).join(SECTION_DELIMITER));
     }, [sections, checkedSections]);
 
+    // --- Dynamic TOC logic ---
+    // Only render and update TOC if "Table of Contents" is in checkedSections
+    const showTOC = checkedSections.includes("Table of Contents");
+
     return (
         <>
         <Header />
+        {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
+        {showTOC && (
+            <DynamicTOC
+                sections={sections.filter(s => checkedSections.includes(s.id))}
+                onUpdateTOC={updateTOCSection}
+            />
+        )}
         <Flex w="100%" px={[0, 2, 6]} py={2} direction={["column", "row"]} align="flex-start" justify="center" gap={4} flex="1 1 0%" minH="0">
             <Box
                 w={["100%", "100%", "80%"]}

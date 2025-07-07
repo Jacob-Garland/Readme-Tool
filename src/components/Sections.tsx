@@ -5,6 +5,7 @@ import { DiamondPlus } from "lucide-react";
 const sectionTitles = [
   "Title",
   "Logo or Image",
+  "Table of Contents",
   "Introduction",
   "Installation",
   "Usage",

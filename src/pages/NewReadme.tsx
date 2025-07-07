@@ -27,27 +27,34 @@ const NewReadme: React.FC = () => {
   const tocRef = useRef<HTMLInputElement>(null);
 
   // Prebuilt markdown section templates
-  const getMarkdownSections = (formData: { title: string; author: string; license: string }) => {
+  const getMarkdownSections = (formData: { title: string; author: string; license: string, toc: boolean }) => {
     const sections: string[] = [];
     if (formData.title) {
-      sections.push(`# ${formData.title}\n`);
+      sections.push(`# ${formData.title}\n\n`);
     }
-    // Table of Contents logic placeholder
-    // if (tocRef.current?.checked) { ... }
+    // Table of Contents logic
+    if (formData.toc) {
+      // Always include License and Credits if present, in order
+      const tocLinks: string[] = [];
+      if (formData.license) tocLinks.push('- [License](#license)');
+      if (formData.author) tocLinks.push('- [Credits](#credits)');
+      // You can add more default links here if needed
+      sections.push(`## Table of Contents\n\n${tocLinks.join("\n")}\n\n`);
+    }
     if (formData.author) {
-      sections.push(`\n## Credits\nCreated by: ${formData.author}\n`);
+      sections.push(`\n## Credits\nCreated by: ${formData.author}\n\n`);
     }
     if (formData.license) {
-      sections.push(`\n## License\nThis project is licensed under the ${formData.license} license.\n Please refer to the LICENSE.md file for more details.\n`);
+      sections.push(`\n## License\nThis project is licensed under the ${formData.license} license.\nPlease refer to the LICENSE.md file for more details.\n\n`);
     }
     return sections;
   };
 
   // Logic to build selection cards for the editor
-  const getSelections = (formData: { title: string; author: string; license: string }) => {
+  const getSelections = (formData: { title: string; author: string; license: string, toc: boolean }) => {
     const selections: string[] = [];
     if (formData.title) selections.push('Title');
-    // Table of Contents logic placeholder
+    if (formData.toc) selections.push('Table of Contents');
     if (formData.author) selections.push('Credits');
     if (formData.license) selections.push('License');
     return selections;
@@ -58,9 +65,10 @@ const NewReadme: React.FC = () => {
       title: titleRef.current?.value || '',
       author: authorRef.current?.value || '',
       license: licenseRef.current?.value || '',
+      toc: tocRef.current?.checked || false,
     };
     // If all fields are blank, behave as before
-    if (!formData.title && !formData.author && !formData.license) {
+    if (!formData.title && !formData.author && !formData.license && !formData.toc) {
       nav('/editor', { state: formData });
       return;
     }
