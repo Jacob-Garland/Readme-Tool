@@ -8,11 +8,11 @@ import React from "react";
 interface SelectionsProps {
   selectedSections: string[];
   checkedSections: string[];
-  onToggle: (title: string) => void;
+  onToggle: (id: string, checked: boolean) => void;
   onReorder: (newOrder: string[]) => void;
 }
 
-function DraggableCard({ id, checked, onToggle, children }: { id: string; checked: boolean; onToggle: (id: string) => void; children: React.ReactNode }) {
+function DraggableCard({ id, checked, onToggle, children }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -30,7 +30,7 @@ function DraggableCard({ id, checked, onToggle, children }: { id: string; checke
         borderWidth={2}
         borderColor={"purple.500"}
         checked={checked}
-        onCheckedChange={() => onToggle(id)}
+        onCheckedChange={(details) => onToggle(id, Boolean(details.checked))}
       >
         <CheckboxCard.HiddenInput />
         <CheckboxCard.Control>

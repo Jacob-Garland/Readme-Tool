@@ -24,31 +24,36 @@ const Editor = () => {
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
 
-    // Add section by id
-    const handleAddSection = (sectionId: string) => {
-        const template = templates.find(t => t.id === sectionId);
-        if (!template) return;
 
-        const newSection = {
-            id: template.id,
-            title: template.title,
-            content: template.content
-        };
-        setSections(prev => [...prev, newSection]);
+    // Add section by id (only adds to checkedSections, not sections array)
+    const handleAddSection = (sectionId: string) => {
+        // If not already in checkedSections, add it
         setCheckedSections(prev => prev.includes(sectionId) ? prev : [...prev, sectionId]);
+        // If not already in sections, add from template
+        if (!sections.find(s => s.id === sectionId)) {
+            const template = templates.find(t => t.id === sectionId);
+            if (template) {
+                setSections(prev => [...prev, { ...template }]);
+            }
+        }
     };
 
     // Toggle checked state
-    const handleToggleSection = (id: string) => {
-        setCheckedSections(prev =>
-            prev.includes(id)
-                ? prev.filter(t => t !== id)
-                : [...prev, id]
-        );
+    const handleToggleSection = (id: string, checked: boolean) => {
+        if (checked) {
+            // Add to checkedSections if not present
+            setCheckedSections(prev => prev.includes(id) ? prev : [...prev, id]);
+        } else {
+            // Remove from checkedSections, but keep in sections array
+            setCheckedSections(prev => prev.filter(t => t !== id));
+        }
     };
 
-    // Reorder sections
+    // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
+        // Reorder checkedSections to match newOrder
+        setCheckedSections(prev => newOrder.filter(id => prev.includes(id)));
+        // Reorder sections array to match newOrder
         setSections(prev => {
             const idToSection = Object.fromEntries(prev.map(s => [s.id, s]));
             return newOrder.map(id => idToSection[id]).filter(Boolean);
@@ -65,10 +70,12 @@ const Editor = () => {
     // This is used to separate sections in the markdown output
     const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter for now
 
-    // Update markdown when sections change
+    // Update markdown when checkedSections or sections change
     useEffect(() => {
-        setMarkdown(sections.map(s => s.content).join(SECTION_DELIMITER));
-    }, [sections]);
+        // Only include sections that are checked, in the current order of checkedSections
+        const checked = checkedSections.map(id => sections.find(s => s.id === id)).filter(Boolean) as SectionType[];
+        setMarkdown(checked.map(s => s.content).join(SECTION_DELIMITER));
+    }, [sections, checkedSections]);
 
     // Autosave hook to save sections periodically
     useAutosave(sections, setSections);
@@ -175,7 +182,7 @@ const Editor = () => {
                             }}
                         >
                             <HStack>
-                                {/* Need to add an Editor here for sections, refactor Raw tab for raw preview */}
+                                {/* Need to add an Editor here for sections, or refactor Raw tab */}
                                 <Box
                                     w="23%"
                                     h="77vh"
