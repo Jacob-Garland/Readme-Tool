@@ -11,6 +11,15 @@ import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
 import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
+import {
+  saveSections,
+  loadSections,
+  saveCheckedSections,
+  loadCheckedSections,
+  saveGitView,
+  loadGitView,
+  store as tauriStore
+} from "../utils/store";
 
 export type SectionType = {
   id: string;
@@ -24,6 +33,33 @@ const Editor = () => {
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
 
+
+    // Load state from Tauri Store on mount
+    useEffect(() => {
+        (async () => {
+            const loadedSections = await loadSections();
+            const loadedChecked = await loadCheckedSections();
+            const loadedGitView = await loadGitView();
+            if (loadedSections) setSections(loadedSections);
+            if (loadedChecked) setCheckedSections(loadedChecked);
+            if (typeof loadedGitView === "boolean") setIsGitView(loadedGitView);
+        })();
+    }, []);
+
+    // Save sections to store when sections change
+    useEffect(() => {
+        saveSections(sections);
+    }, [sections]);
+
+    // Save checkedSections to store when checkedSections change
+    useEffect(() => {
+        saveCheckedSections(checkedSections);
+    }, [checkedSections]);
+
+    // Save Git-View switch to store when isGitView changes
+    useEffect(() => {
+        saveGitView(isGitView);
+    }, [isGitView]);
 
     // Add section by id (only adds to checkedSections, not sections array)
     const handleAddSection = (sectionId: string) => {
@@ -61,10 +97,14 @@ const Editor = () => {
     };
 
     // Reset all
-    const handleReset = () => {
+    const handleReset = async () => {
         setSections([]);
         setCheckedSections([]);
         setMarkdown("");
+        // Remove from Tauri store as well
+        await tauriStore.delete("sections");
+        await tauriStore.delete("checkedSections");
+        await tauriStore.delete("isGitView");
     };
 
     // This is used to separate sections in the markdown output

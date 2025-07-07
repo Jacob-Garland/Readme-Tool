@@ -48,3 +48,5 @@ export async function saveStore() {
     throw err;
   }
 }
+
+export { store };
