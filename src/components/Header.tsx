@@ -1,6 +1,7 @@
 import { Box, Flex, Heading, IconButton, Link, Code } from '@chakra-ui/react';
 import { Github } from 'lucide-react';
 import BackButton from './ui/BackButton';
+import HeaderMenu from './ui/HeaderMenu';
 import SaveButton from './ui/SaveButton';
 import { ColorModeSwitch } from './ui/color-mode';
 
@@ -33,6 +34,7 @@ const Header = () => {
                             <Github />
                         </IconButton>
                     </Link>
+                    <HeaderMenu />
                 </Flex>
             </Flex>
         </Box>
