@@ -38,7 +38,6 @@ const NewReadme: React.FC = () => {
       const tocLinks: string[] = [];
       if (formData.license) tocLinks.push('- [License](#license)');
       if (formData.author) tocLinks.push('- [Credits](#credits)');
-      // You can add more default links here if needed
       sections.push(`## Table of Contents\n\n${tocLinks.join("\n")}\n\n`);
     }
     if (formData.author) {
@@ -67,7 +66,8 @@ const NewReadme: React.FC = () => {
       license: licenseRef.current?.value || '',
       toc: tocRef.current?.checked || false,
     };
-    // If all fields are blank, behave as before
+    // If all fields are blank, behave as blank readme
+    // This allows the user to start with a blank readme if they choose not to fill form
     if (!formData.title && !formData.author && !formData.license && !formData.toc) {
       nav('/editor', { state: formData });
       return;
@@ -110,7 +110,10 @@ const NewReadme: React.FC = () => {
         <Fieldset.Root size="lg" maxW="md">
           <Stack mb={2}>
             <Fieldset.HelperText fontSize={"md"} fontWeight={"bold"} textAlign={"center"}>
-              Please provide some details below to get started.
+              Provide some details below to get started or skip.
+            </Fieldset.HelperText>
+            <Fieldset.HelperText fontSize={"md"} fontWeight={"bold"} textAlign={"center"}>
+              All fields are optional, but providing input will help you scaffold your README.md faster.
             </Fieldset.HelperText>
           </Stack>
 

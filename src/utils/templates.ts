@@ -10,8 +10,8 @@ export const templates = [
     content: `# Project Title\n\n`
   },
   {
-    id: "Logo or Image",
-    title: "Logo or Image",
+    id: "Logo",
+    title: "Logo",
     content: `![Logo](paste-your-image-url-here)\n\n`
   },
   {
@@ -90,6 +90,11 @@ export const templates = [
     content: `\n## License\n\nThis project is licensed under the [NAME HERE] License. Please refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`
   },
   {
+    id: "Image",
+    title: "Image",
+    content: `![Image Alt Text](path/to/image.jpg)\n`
+  },
+  {
     id: "Video",
     title: "Video",
     content: `[![Video Title](path/to/thumbnail.jpg)](path/to/video.mp4)\n`
@@ -98,5 +103,5 @@ export const templates = [
     id: "Youtube Video",
     title: "Youtube Video",
     content: `[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)\n`
-  }
+  },
 ]
