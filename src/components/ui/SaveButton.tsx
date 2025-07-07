@@ -1,16 +1,12 @@
 import { IconButton } from '@chakra-ui/react';
 import { Save } from 'lucide-react';
-import { saveSections, Section } from '@/utils/saveRestore';
+import { saveStore } from '@/utils/store';
 import { toaster } from './toaster';
 
-interface SaveButtonProps {
-    sections: Section[];
-}
-
-const SaveButton: React.FC<SaveButtonProps> = ({ sections }) => {
+const SaveButton = () => {
     const handleSave = async () => {
         try {
-            await saveSections(sections);
+            await saveStore();
             toaster.create({
                 title: 'Draft saved',
                 description: 'Your draft has been saved successfully.',

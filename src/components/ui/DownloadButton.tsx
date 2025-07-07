@@ -30,7 +30,7 @@ const DownloadButton: React.FC = () => {
         mb={4}
         onClick={handleDownload}
         >
-        <FileDown /> Download File
+          <FileDown /> Download File
         </IconButton>
     );
 };

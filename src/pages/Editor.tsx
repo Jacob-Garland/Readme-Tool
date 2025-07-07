@@ -11,7 +11,6 @@ import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
 import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
-import { useAutosave } from "@/hooks/useAutosave";
 
 export type SectionType = {
   id: string;
@@ -62,11 +61,11 @@ const Editor = () => {
     };
 
     // Reset all
-        const handleReset = () => {
-            setSections([]);
-            setCheckedSections([]);
-            setMarkdown("");
-        };
+    const handleReset = () => {
+        setSections([]);
+        setCheckedSections([]);
+        setMarkdown("");
+    };
 
     // This is used to separate sections in the markdown output
     const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter for now
@@ -78,12 +77,9 @@ const Editor = () => {
         setMarkdown(checked.map(s => s.content).join(SECTION_DELIMITER));
     }, [sections, checkedSections]);
 
-    // Autosave hook to save sections periodically
-    useAutosave(sections, setSections);
-
     return (
         <>
-        <Header sections={sections} />
+        <Header />
         <Flex w="100%" px={[0, 2, 6]} py={2} direction={["column", "row"]} align="flex-start" justify="center" gap={4} flex="1 1 0%" minH="0">
             <Box
                 w={["100%", "100%", "80%"]}
