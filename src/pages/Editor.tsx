@@ -1,14 +1,15 @@
-import { Tabs, Box, Textarea, Flex, Heading, HStack } from "@chakra-ui/react";
+import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
-import PreviewSwitch from "@/components/ui/PreviewSwitch";
+import MonacoEditorWrapper from "@/components/MonacoEditor";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
 import ResetButton from "@/components/ui/ResetButton";
 import CopyButton from "@/components/ui/CopyButton";
 import DownloadButton from "@/components/ui/DownloadButton";
+import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import { useAutosave } from "@/hooks/useAutosave";
 
@@ -103,8 +104,7 @@ const Editor = () => {
                     colorPalette={"purple"}
                 >
                     <Tabs.List zIndex={1}>
-                        <Tabs.Trigger value="raw">Raw File</Tabs.Trigger>
-                        <Tabs.Trigger value="editor">Section Editor</Tabs.Trigger>
+                        <Tabs.Trigger value="raw">Raw Editor</Tabs.Trigger>
                         <Tabs.Trigger value="preview">Output Preview</Tabs.Trigger>
                     </Tabs.List>
                     <Tabs.ContentGroup flex="1 1 0%" minH={0}>
@@ -124,65 +124,20 @@ const Editor = () => {
                             }}
                         >
                             <HStack justifyContent={"space-between"}>
-                                <Textarea
+                                <MonacoEditorWrapper
                                     value={markdown}
-                                    onChange={(e) => {
-                                        const newContents = e.target.value.split(SECTION_DELIMITER);
+                                    onChange={(val) => {
+                                        const newContents = val.split(SECTION_DELIMITER);
                                         setSections(prevSections =>
                                         prevSections.map((section, idx) => ({
                                             ...section,
-                                            content: newContents[idx] !== undefined ? newContents[idx].replaceAll(SECTION_DELIMITER, "") : ""
+                                            content: newContents[idx] !== undefined ? newContents[idx] : ""
                                         }))
-                                    );}}
-                                    h="77vh"
-                                    minH="300px"
-                                    w="75%"
-                                    placeholder="Write your README here..."
-                                    fontFamily="mono"
-                                    resize="none"
-                                    borderColor="purple.300"
-                                    _hover={{ borderColor: "purple.500" }}
-                                    borderWidth={3}
-                                />
-                                <Box
-                                    w="23%"
-                                    h="77vh"
-                                    minH="300px"
-                                    overflowY="auto"
-                                    borderRadius="md"
-                                    bg={"purple.100"}
-                                    p={4}
-                                    boxShadow="md"
-                                >
-                                    <Heading mt={2} mb={4} textAlign={"center"}>
-                                        <CopyButton value={markdown} /> <ResetButton onReset={handleReset} />
-                                    </Heading>
-                                    <Selections
-                                        selectedSections={sections.map(s => s.id)}
-                                        checkedSections={checkedSections}
-                                        onToggle={handleToggleSection}
-                                        onReorder={handleReorderSections}
-                                    />
-                                </Box>
-                            </HStack>
-                        </Tabs.Content>
-                        <Tabs.Content
-                            value="editor"
-                            p={6}
-                            flex="1 1 0%"
-                            minH={0}
-                            overflowY="auto"
-                            _open={{
-                                animationName: "fade-in, scale-in",
-                                animationDuration: "300ms",
-                            }}
-                            _closed={{
-                                animationName: "fade-out, scale-out",
-                                animationDuration: "120ms",
-                            }}
-                        >
-                            <HStack>
-                                {/* Need to add an Editor here for sections, or refactor Raw tab */}
+                                        );
+                                    }}
+                                    height="77vh"
+                                    width="75%"
+                                 />
                                 <Box
                                     w="23%"
                                     h="77vh"
