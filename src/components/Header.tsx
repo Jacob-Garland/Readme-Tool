@@ -3,6 +3,7 @@ import { Github } from 'lucide-react';
 import BackButton from './ui/BackButton';
 import SaveButton from './ui/SaveButton';
 import type { Section } from '@/utils/saveRestore';
+import { ColorModeSwitch } from './ui/color-mode';
 
 interface HeaderProps {
   sections: Section[];
@@ -26,6 +27,7 @@ const Header: React.FC<HeaderProps> = ({ sections }) => {
         
                 {/* Right-side */}
                 <Flex gap={2}>
+                    <ColorModeSwitch />
                     <Link href="https://github.com/Jacob-Garland/Readme-Tool" target="_blank" rel="noopener noreferrer">
                         <IconButton
                             aria-label="GitHub Repository"

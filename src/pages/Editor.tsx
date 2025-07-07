@@ -217,7 +217,13 @@ const Editor = () => {
                                         {markdown}
                                     </ReactMarkdown>
                                 </Box>
-                                <DownloadButton />
+                                <Box minW={"15%"} maxW={"30%"} borderRadius="md" bg={"purple.100"} p={4} boxShadow="md" alignContent={"center"} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+                                    <Heading size="md" mb={2} textAlign={"center"}>
+                                        Actions
+                                    </Heading>
+                                    <DownloadButton />
+                                    <CopyButton value={markdown} />
+                                </Box>
                             </HStack>
                         </Tabs.Content>
                     </Tabs.ContentGroup>
