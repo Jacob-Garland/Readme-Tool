@@ -73,7 +73,7 @@ const Editor = () => {
     // Update markdown when checkedSections or sections change
     useEffect(() => {
         // Only include sections that are checked, in the current order of checkedSections
-        const checked = checkedSections.map(id => sections.find(s => s.id === id)).filter(Boolean) as SectionType[];
+        const checked = sections.filter(s => checkedSections.includes(s.id));
         setMarkdown(checked.map(s => s.content).join(SECTION_DELIMITER));
     }, [sections, checkedSections]);
 
