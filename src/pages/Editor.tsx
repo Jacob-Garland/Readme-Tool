@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "@/components/Header";
+import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
 import ResetButton from "@/components/ui/ResetButton";
@@ -21,6 +22,7 @@ const Editor = () => {
     const [sections, setSections] = useState<SectionType[]>([]);
     const [checkedSections, setCheckedSections] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>("");
+    const [isGitView, setIsGitView] = useState<boolean>(true);
 
     // Add section by id
     const handleAddSection = (sectionId: string) => {
@@ -213,14 +215,16 @@ const Editor = () => {
                         >
                             <HStack justifyContent={"space-between"} alignItems="flex-start" flexWrap="wrap">
                                 <Box minH="750px" minW={"70%"} maxW={"85%"} borderRadius="md" bg={"gray.100"} p={4} boxShadow="md" overflow={"auto"}>
-                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                                        {markdown}
-                                    </ReactMarkdown>
+                                    {isGitView ? (
+                                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                            {markdown}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{markdown}</pre>
+                                    )}
                                 </Box>
                                 <Box minW={"15%"} maxW={"30%"} borderRadius="md" bg={"purple.100"} p={4} boxShadow="md" alignContent={"center"} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                                    <Heading size="md" mb={2} textAlign={"center"}>
-                                        Actions
-                                    </Heading>
+                                    <PreviewSwitch isGitView={isGitView} setIsGitView={setIsGitView} />
                                     <DownloadButton />
                                     <CopyButton value={markdown} />
                                 </Box>
