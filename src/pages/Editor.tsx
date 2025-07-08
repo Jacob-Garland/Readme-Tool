@@ -7,9 +7,9 @@ import Header from "@/components/Header";
 import MonacoEditorWrapper from "@/components/MonacoEditor";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
-import ResetButton from "@/components/ui/ResetButton";
-import CopyButton from "@/components/ui/CopyButton";
-import DownloadButton from "@/components/ui/DownloadButton";
+// import ResetButton from "@/components/ui/ResetButton";
+// import CopyButton from "@/components/ui/CopyButton";
+// import DownloadButton from "@/components/ui/DownloadButton";
 import PreviewSwitch from "@/components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import DynamicTOC from "../components/DynamicTOC";
@@ -149,7 +149,7 @@ const Editor = () => {
 
     return (
         <>
-        <Header />
+        <Header markdown={markdown} onReset={handleReset} />
         {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
         {showTOC && (
             <DynamicTOC
@@ -221,8 +221,8 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Heading mt={2} mb={4} textAlign={"center"}>
-                                        <CopyButton value={markdown} /> <ResetButton onReset={handleReset} />
+                                    <Heading m={4} textAlign={"center"}>
+                                        Selections
                                     </Heading>
                                     <Selections
                                         selectedSections={sections.map(s => s.id)}
@@ -258,10 +258,28 @@ const Editor = () => {
                                         <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}>{markdown}</pre>
                                     )}
                                 </Box>
-                                <Box minW={"15%"} maxW={"30%"} borderRadius="md" bg={"purple.100"} p={4} boxShadow="md" alignContent={"center"} display="flex" flexDirection="column" alignItems="center" justifyContent="center">
-                                    <PreviewSwitch isGitView={isGitView} setIsGitView={setIsGitView} />
-                                    <DownloadButton />
-                                    <CopyButton value={markdown} />
+                                <Box
+                                    w="23%"
+                                    h="77vh"
+                                    minH="300px"
+                                    overflowY="auto"
+                                    borderRadius="md"
+                                    bg={"purple.100"}
+                                    p={4}
+                                    boxShadow="md"
+                                >
+                                    <Heading textAlign={"center"}>
+                                        Selections
+                                    </Heading>
+                                    <Flex justifyContent="center" mb={4}>
+                                        <PreviewSwitch isGitView={isGitView} setIsGitView={setIsGitView} />
+                                    </Flex>
+                                    <Selections
+                                        selectedSections={sections.map(s => s.id)}
+                                        checkedSections={checkedSections}
+                                        onToggle={handleToggleSection}
+                                        onReorder={handleReorderSections}
+                                    />
                                 </Box>
                             </HStack>
                         </Tabs.Content>

@@ -16,14 +16,15 @@ const PreviewSwitch: React.FC<PreviewSwitchProps> = ({ isGitView, setIsGitView }
             align={"center"}
             direction={"row"}
             p={4}
+            ml={2}
         >
-            <Text fontSize={"md"} mr={3}>Raw MD</Text>
+            <Text fontSize={"md"} mr={4}>Markdown</Text>
             <Switch.Root colorPalette={"purple"} size={"lg"} checked={isGitView} onCheckedChange={handleSwitchChange}>
                 <Switch.HiddenInput />
                 <Switch.Control />
                 <Switch.Label />
             </Switch.Root>
-            <Text fontSize={"md"}>Git-View</Text>
+            <Text fontSize={"md"}>GitHub View</Text>
         </Stack>
     )
 }

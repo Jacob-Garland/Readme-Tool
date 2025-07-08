@@ -1,54 +1,127 @@
 import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
+import { toaster } from './toaster';
+import { saveStore } from '@/utils/store';
 
-const horizontalMenuItems = [
-  { label: "Copy", value: "copy", icon: <Copy /> },
-  { label: "Save", value: "save", icon: <Save /> },
-  { label: "Export", value: "export", icon: <Download /> }
-]
+interface HeaderMenuProps {
+  markdown: string;
+  onReset: () => void;
+}
 
-const verticalMenuItems = [
-  { label: "Reset File", value: "reset", icon: <ListRestart /> },
-  { label: "Repository", value: "repository", icon: <Github /> },
-]
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
+  // Copy logic
+  const handleCopy = () => {
+    try {
+      navigator.clipboard.writeText(markdown);
+      toaster.create({
+        title: 'Copied to clipboard',
+        description: 'The file has been copied successfully.',
+        type: 'success',
+      });
+    } catch (error) {
+      toaster.create({
+        title: 'Copy failed',
+        description: 'Unsuccessful file copy. Please try again...',
+        type: 'error',
+      });
+    }
+  };
 
-const HeaderMenu = () => {
+  // Save logic
+  const handleSave = async () => {
+    try {
+      await saveStore();
+      toaster.create({
+        title: 'Draft saved',
+        description: 'Your draft has been saved successfully.',
+        type: 'success',
+      });
+    } catch (error) {
+      toaster.create({
+        title: 'Save failed',
+        description: 'There was an error saving your draft. Please try again.',
+        type: 'error',
+      });
+      console.error("Error saving sections:", error);
+    }
+  };
+
+  // Download logic (placeholder)
+  const handleDownload = () => {
+    toaster.create({
+      title: 'Download feature coming soon',
+      description: 'Export functionality will be available in a future update.',
+      type: 'info',
+    });
+  };
+
+  // Repository logic
+  const handleRepository = () => {
+    window.open('https://github.com/Jacob-Garland/Readme-Tool', '_blank', 'noopener,noreferrer');
+  };
+
   return (
-    <Menu.Root>
+    <Menu.Root closeOnSelect={true}>
       <Menu.Trigger asChild>
-        <IconButton variant="solid" size="lg" aria-label="Open menu" rounded={"full"}>
-            <SquareMenu />
+        <IconButton variant="solid" size="lg" aria-label="Open Menu" rounded={"full"}>
+          <SquareMenu />
         </IconButton>
       </Menu.Trigger>
       <Portal>
         <Menu.Positioner>
           <Menu.Content>
             <Group grow gap="0" p={2}>
-              {horizontalMenuItems.map((item) => (
-                <Menu.Item
-                  key={item.value}
-                  value={item.value}
-                  width="14"
-                  gap="1"
-                  flexDirection="column"
-                  justifyContent="center"
-                >
-                  {item.icon}
-                  {item.label}
-                </Menu.Item>
-              ))}
-            </Group>
-            {verticalMenuItems.map((item) => (
-              <Menu.Item key={item.value} value={item.value}>
-                <Box flex="1">{item.label}</Box>
-                {item.icon}
+              <Menu.Item
+                value="copy"
+                width="14"
+                gap="1"
+                flexDirection="column"
+                justifyContent="center"
+                onClick={handleCopy}
+              >
+                <Copy />
+                Copy
               </Menu.Item>
-            ))}
+              <Menu.Item
+                value="save"
+                width="14"
+                gap="1"
+                flexDirection="column"
+                justifyContent="center"
+                onClick={handleSave}
+              >
+                <Save />
+                Save
+              </Menu.Item>
+            </Group>
+            <Menu.Item
+              value="reset"
+              color="fg.error"
+              _hover={{ bg: "bg.error", color: "fg.error" }}
+              onClick={onReset}
+            >
+              <Box flex="1">Reset Editor</Box>
+              <ListRestart />
+            </Menu.Item>
+            <Menu.Item
+              value="export"
+              onClick={handleDownload}
+            >
+              <Box flex="1">Export File</Box>
+              <Download />
+            </Menu.Item>
+            <Menu.Item
+              value="repository"
+              onClick={handleRepository}
+            >
+              <Box flex="1">Repository</Box>
+              <Github />
+            </Menu.Item>
           </Menu.Content>
         </Menu.Positioner>
       </Portal>
     </Menu.Root>
-  )
-}
+  );
+};
 
 export default HeaderMenu;
