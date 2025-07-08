@@ -2,6 +2,8 @@ import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
 import { toaster } from './toaster';
 import { saveStore } from '@/utils/store';
+import { save } from '@tauri-apps/plugin-dialog';
+import { writeTextFile } from '@tauri-apps/plugin-fs';
 
 interface HeaderMenuProps {
   markdown: string;
@@ -46,13 +48,35 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
     }
   };
 
-  // Download logic (placeholder)
-  const handleDownload = () => {
-    toaster.create({
-      title: 'Download feature coming soon',
-      description: 'Export functionality will be available in a future update.',
-      type: 'info',
-    });
+  // Download logic
+  const handleDownload = async () => {
+    try {
+      const filePath = await save({
+        defaultPath: 'README.md',
+        filters: [
+          {
+            name: 'Markdown Files',
+            extensions: ['md'],
+          },
+        ],
+      });
+      if (filePath) {
+        // Save the markdown content to the selected file
+        await writeTextFile(filePath, markdown);
+        toaster.create({
+          title: 'Download successful',
+          description: 'Your file has been downloaded successfully.',
+          type: 'success',
+        });
+      }
+    } catch (error) {
+      toaster.create({
+        title: 'Download failed',
+        description: 'There was an error downloading your file. Please try again.',
+        type: 'error',
+      });
+      console.error("Error downloading file:", error);
+    }
   };
 
   // Repository logic
