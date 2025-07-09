@@ -147,6 +147,21 @@ const Editor = () => {
     // Only render and update TOC if "Table of Contents" is in checkedSections
     const showTOC = checkedSections.includes("Table of Contents");
 
+    // Handler to insert badge markdown into the editor
+    function handleInsertBadge(badgeMarkdown: string, opts?: { section?: string }) {
+        if (opts?.section && opts.section === "Badges") {
+            // Find the Badges section and append the badge
+            setSections(prevSections => prevSections.map(s =>
+                s.id === "Badges"
+                    ? { ...s, content: s.content + (s.content.trim() ? "\n" : "") + badgeMarkdown + "\n" }
+                    : s
+            ));
+        } else {
+            // Insert at the end of the current markdown (or implement cursor logic if available)
+            setMarkdown(prev => prev + (prev.trim() ? "\n" : "") + badgeMarkdown + "\n");
+        }
+    }
+
     return (
         <>
         <Header markdown={markdown} onReset={handleReset} />
@@ -287,7 +302,7 @@ const Editor = () => {
                 </Tabs.Root>
             </Box>
 
-            <Sections onSectionClick={handleAddSection} />
+            <Sections onSectionClick={handleAddSection} onInsertBadge={handleInsertBadge} selections={checkedSections} />
         </Flex>
         </>
     );

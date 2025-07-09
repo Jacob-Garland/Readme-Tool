@@ -1,6 +1,7 @@
 import React from "react";
 import { Button, VStack, Icon, Box, Heading, Text } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
+import BadgeForm from "./BadgeForm";
 
 const sectionTitles = [
   "Title",
@@ -27,9 +28,11 @@ const sectionTitles = [
 
 interface SectionsProps {
   onSectionClick?: (section: string) => void;
+  onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
+  selections: string[];
 }
 
-const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
+const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, selections }) => {
   // Handler for blank section
   const handleBlankSection = () => {
     if (onSectionClick) {
@@ -59,9 +62,10 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick }) => {
         </Box>
         
             <VStack gap={2} p={4} alignItems="center">
-                <Button variant={"outline"} borderColor={"purple.500"} borderWidth={2} w="80%" mb={4} onClick={handleBlankSection} fontSize={"md"}>
+                <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"}>
                     <Icon as={DiamondPlus} mr={1} /> Blank Section
                 </Button>
+                <BadgeForm onInsert={onInsertBadge} selections={selections} />
             {sectionTitles.map((section) => (
                 <Button
                 key={section}
