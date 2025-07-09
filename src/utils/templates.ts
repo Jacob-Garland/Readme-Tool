@@ -12,7 +12,7 @@ export const templates = [
   {
     id: "Logo",
     title: "Logo",
-    content: `![Logo](paste-your-image-url-here)\n\n`
+    content: `![Logo](paste-your-image-url-here)\n`
   },
   {
     id: "Introduction",

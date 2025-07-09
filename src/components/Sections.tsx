@@ -34,10 +34,11 @@ const markdownComponentTitles = [
 interface SectionsProps {
   onSectionClick?: (section: string) => void;
   onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
+  onInsertMarkdownComponent?: (section: string) => void;
   selections: string[];
 }
 
-const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, selections }) => {
+const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
   // Handler for blank section
   const handleBlankSection = () => {
     if (onSectionClick) {
@@ -90,7 +91,11 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, sele
                   key={section}
                   colorPalette="purple"
                   w="80%"
-                  onClick={onSectionClick ? () => onSectionClick(section) : undefined}
+                  onClick={() => {
+                    if (onInsertMarkdownComponent) {
+                      onInsertMarkdownComponent(section);
+                    }
+                  }}
                   fontSize={"md"}
                 >
                   {section}

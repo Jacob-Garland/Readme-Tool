@@ -3,14 +3,11 @@ import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import Header from "@/components/Header";
-import MonacoEditorWrapper from "@/components/MonacoEditor";
+import Header from "../components/Header";
+import MonacoEditorWrapper from "../components/MonacoEditor";
 import Sections from "../components/Sections";
 import Selections from "../components/Selections";
-// import ResetButton from "@/components/ui/ResetButton";
-// import CopyButton from "@/components/ui/CopyButton";
-// import DownloadButton from "@/components/ui/DownloadButton";
-import PreviewSwitch from "@/components/ui/PreviewSwitch";
+import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import DynamicTOC from "../components/DynamicTOC";
 import {
@@ -162,6 +159,14 @@ const Editor = () => {
         }
     }
 
+    // Handler to insert markdown component directly into markdown (not sections)
+    function handleInsertMarkdownComponent(componentId: string) {
+        const template = templates.find(t => t.id === componentId);
+        if (template) {
+            setMarkdown(prev => prev + (prev.trim() ? "\n" : "") + template.content + "\n");
+        }
+    }
+
     return (
         <>
         <Header markdown={markdown} onReset={handleReset} />
@@ -302,7 +307,12 @@ const Editor = () => {
                 </Tabs.Root>
             </Box>
 
-            <Sections onSectionClick={handleAddSection} onInsertBadge={handleInsertBadge} selections={checkedSections} />
+            <Sections
+                onSectionClick={handleAddSection}
+                onInsertBadge={handleInsertBadge}
+                onInsertMarkdownComponent={handleInsertMarkdownComponent}
+                selections={checkedSections}
+            />
         </Flex>
         </>
     );
