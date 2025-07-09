@@ -104,4 +104,54 @@ export const templates = [
     title: "Youtube Video",
     content: `[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE)\n`
   },
+  {
+    id: "Heading 1",
+    title: "Heading 1",
+    content: `# Heading 1\n`
+  },
+  {
+    id: "Heading 2",
+    title: "Heading 2",
+    content: `## Heading 2\n`
+  },
+  {
+    id: "Heading 3",
+    title: "Heading 3",
+    content: `### Heading 3\n`
+  },
+  {
+    id: "Bold Text",
+    title: "Bold Text",
+    content: `**Bold Text**\n`
+  },
+  {
+    id: "Italicized Text",
+    title: "Italicized Text",
+    content: `*Italicized Text*\n`
+  },
+  {
+    id: "Blockquote",
+    title: "Blockquote",
+    content: `> Blockquote\n`
+  },
+  {
+    id: "Ordered List",
+    title: "Ordered List",
+    content: `1. First item\n2. Second item\n3. Third item\n`
+  },
+  {
+    id: "Unordered List",
+    title: "Unordered List",
+    content: `- First item\n- Second item\n- Third item\n`
+  },
+  {
+    id: "Code",
+    title: "Code",
+    content: "```js\n// code here\n```\n"
+  },
+  {
+    id: "Link",
+    title: "Link",
+    content: `[Link Text](https://example.com)\n`
+  },
 ]

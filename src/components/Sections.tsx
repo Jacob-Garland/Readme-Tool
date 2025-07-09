@@ -29,7 +29,17 @@ const markdownComponentTitles = [
   "Logo",
   "Image",
   "Video",
-  "Youtube Video"
+  "Youtube Video",
+  "Heading 1",
+  "Heading 2",
+  "Heading 3",
+  "Bold Text",
+  "Italicized Text",
+  "Blockquote",
+  "Ordered List",
+  "Unordered List",
+  "Code",
+  "Link"
 ];
 
 interface SectionsProps {
