@@ -3,9 +3,9 @@ import { Button, VStack, Icon, Box, Heading, Text } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 import BadgeForm from "./BadgeForm";
 
+// Pre-Built Sections
 const sectionTitles = [
   "Title",
-  "Logo",
   "Table of Contents",
   "Introduction",
   "Installation",
@@ -20,7 +20,12 @@ const sectionTitles = [
   "Requirements",
   "FAQ",
   "Badges",
-  "License",
+  "License"
+];
+
+// Markdown Components
+const markdownComponentTitles = [
+  "Logo",
   "Image",
   "Video",
   "Youtube Video"
@@ -55,26 +60,40 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, sele
         overflowY={"auto"}
     >
         <Heading size="xl" textAlign="center" mt={2}>
-            Select A Section
+            Builder Menu
         </Heading>
-        <Box textAlign="center" mb={2} fontSize="sm">
-            <Text>Click on a section to add it to your README.md</Text>
+        <Box textAlign="center" fontSize="sm">
+            <Text>Click on a button to add it to your README.md</Text>
         </Box>
         
             <VStack gap={2} p={4} alignItems="center">
-                <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"}>
+              <BadgeForm onInsert={onInsertBadge} selections={selections} />
+                <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"} mb={2}>
                     <Icon as={DiamondPlus} mr={1} /> Blank Section
                 </Button>
-                <BadgeForm onInsert={onInsertBadge} selections={selections} />
             {sectionTitles.map((section) => (
                 <Button
-                key={section}
-                colorPalette="purple"
-                w="80%"
-                onClick={onSectionClick ? () => onSectionClick(section) : undefined}
-                fontSize={"md"}
+                  key={section}
+                  colorPalette="purple"
+                  w="80%"
+                  onClick={onSectionClick ? () => onSectionClick(section) : undefined}
+                  fontSize={"md"}
                 >
-                {section}
+                  {section}
+                </Button>
+            ))}
+            <Heading size="lg" textAlign="center" mt={4}>
+              Markdown Components
+            </Heading>
+            {markdownComponentTitles.map((section) => (
+                <Button
+                  key={section}
+                  colorPalette="purple"
+                  w="80%"
+                  onClick={onSectionClick ? () => onSectionClick(section) : undefined}
+                  fontSize={"md"}
+                >
+                  {section}
                 </Button>
             ))}
             </VStack>

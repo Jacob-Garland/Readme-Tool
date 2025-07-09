@@ -105,7 +105,7 @@ const BadgeForm: React.FC<BadgeFormProps> = ({ onInsert, selections }) => {
     return (
     <Popover.Root>
         <Popover.Trigger asChild>
-            <Button variant={"solid"} color={"purple.500"} fontSize={"md"} w={"80%"} mb={2} loading={loading}>
+            <Button variant={"solid"} color={"purple.500"} fontSize={"md"} w={"80%"} loading={loading}>
                 <Icon as={DiamondPlus} mr={1} /> Make a Badge
             </Button>
         </Popover.Trigger>
