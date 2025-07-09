@@ -11,9 +11,14 @@ const toAnchor = (title: string) =>
 
 const DynamicTOC: React.FC<DynamicTOCProps> = ({ sections, onUpdateTOC }) => {
   useEffect(() => {
-    // Exclude the TOC section itself from the links
+    // Exclude the TOC section itself and the Title section from the links (by id or title)
     const filtered = sections.filter(
-      (s) => s.title !== "Table of Contents" && s.title !== "Title"
+      (s) =>
+        s.title !== "Table of Contents" &&
+        s.title !== "Title" &&
+        s.id !== "Table of Contents" &&
+        s.id !== "Title" &&
+        s.id !== "Project Title"
     );
     const tocLinks = filtered.map(
       (s) => `- [${s.title}](${toAnchor(s.title)})`

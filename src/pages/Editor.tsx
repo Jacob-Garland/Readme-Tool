@@ -110,9 +110,14 @@ const Editor = () => {
 
     // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
-        // Reorder checkedSections to match newOrder
+        // Prevent Title from being reordered
+        if (checkedSections[0] === 'Title') {
+            if (newOrder[0] !== 'Title') {
+                // Move Title back to the top
+                newOrder = ['Title', ...newOrder.filter(id => id !== 'Title')];
+            }
+        }
         setCheckedSections(prev => newOrder.filter(id => prev.includes(id)));
-        // Reorder sections array to match newOrder
         setSections(prev => {
             const idToSection = Object.fromEntries(prev.map(s => [s.id, s]));
             return newOrder.map(id => idToSection[id]).filter(Boolean);

@@ -10,19 +10,20 @@ interface SelectionsProps {
   checkedSections: string[];
   onToggle: (id: string, checked: boolean) => void;
   onReorder: (newOrder: string[]) => void;
+  nonDraggableIds?: string[];
 }
 
-function DraggableCard({ id, checked, onToggle, children }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode }) {
+function DraggableCard({ id, checked, onToggle, children, draggable }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode; draggable?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.7 : 1,
     background: isDragging ? '#E9D8FD' : undefined,
-    cursor: 'grab',
+    cursor: draggable === false ? 'default' : 'grab',
   };
   return (
-    <div ref={setNodeRef} style={style} {...attributes}>
+    <div ref={setNodeRef} style={style} {...(draggable === false ? {} : attributes)}>
       <CheckboxCard.Root
         size={"sm"}
         colorPalette={"gray"}
@@ -34,6 +35,7 @@ function DraggableCard({ id, checked, onToggle, children }: { id: string; checke
       >
         <CheckboxCard.HiddenInput />
         <CheckboxCard.Control>
+          {draggable !== false && (
             <IconButton
               aria-label="Drag handle"
               variant="ghost"
@@ -42,18 +44,19 @@ function DraggableCard({ id, checked, onToggle, children }: { id: string; checke
               tabIndex={-1}
               cursor="grab"
               mr={2}
-            > 
-                <GripVertical />
+            >
+              <GripVertical />
             </IconButton>
-              <CheckboxCard.Label mt={2} fontSize={"md"}>{children}</CheckboxCard.Label>
-            <CheckboxCard.Indicator />
+          )}
+          <CheckboxCard.Label mt={2} fontSize={"md"}>{children}</CheckboxCard.Label>
+          <CheckboxCard.Indicator />
         </CheckboxCard.Control>
       </CheckboxCard.Root>
     </div>
   );
 }
 
-const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder }) => {
+const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [] }) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const handleDragEnd = (event: DragEndEvent) => {
@@ -71,7 +74,13 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
       <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
         <VStack align="stretch" p={2}>
           {selectedSections.map((title) => (
-            <DraggableCard key={title} id={title} checked={checkedSections.includes(title)} onToggle={onToggle}>
+            <DraggableCard
+              key={title}
+              id={title}
+              checked={checkedSections.includes(title)}
+              onToggle={onToggle}
+              draggable={!nonDraggableIds.includes(title)}
+            >
               {title}
             </DraggableCard>
           ))}
