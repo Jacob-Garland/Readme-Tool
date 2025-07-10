@@ -2,13 +2,15 @@ import { Box, Flex, Heading, Code } from '@chakra-ui/react';
 import BackButton from './ui/BackButton';
 import HeaderMenu from './ui/HeaderMenu';
 import { ColorModeSwitch } from './ui/color-mode';
+import { Draft } from '../pages/Editor';
 
 interface HeaderProps {
   markdown: string;
   onReset: () => void;
+  draft: Draft;
 }
 
-const Header: React.FC<HeaderProps> = ({ markdown, onReset }) => {
+const Header: React.FC<HeaderProps> = ({ markdown, onReset, draft }) => {
     return (
         <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"}>
             <Flex align="center" justify="space-between">
@@ -26,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ markdown, onReset }) => {
                 {/* Right-side */}
                 <Flex gap={2}>
                     <ColorModeSwitch />
-                    <HeaderMenu markdown={markdown} onReset={onReset} />
+                    <HeaderMenu markdown={markdown} onReset={onReset} draft={draft} />
                 </Flex>
             </Flex>
         </Box>

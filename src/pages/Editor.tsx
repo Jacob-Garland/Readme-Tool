@@ -24,7 +24,7 @@ export type Section = {
 };
 
 // --- Type for draft and settings returned from Tauri ---
-type EditorDraft = {
+export type Draft = {
   sections: Section[];
   selections: string[];
   markdown: string;
@@ -40,6 +40,12 @@ const Editor = () => {
     const [checkedSections, setCheckedSections] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
+
+    const draft: Draft = {
+        sections,
+        selections: checkedSections,
+        markdown
+    };
 
     // Helper to update the TOC section content dynamically
     const updateTOCSection = useCallback((tocMarkdown: string) => {
@@ -57,7 +63,7 @@ const Editor = () => {
     // On mount, load draft and settings from Tauri
     useEffect(() => {
         (async () => {
-            const draft = (await getDraft()) as EditorDraft | null;
+            const draft = (await getDraft()) as Draft | null;
             if (draft && typeof draft === 'object') {
                 setSections(Array.isArray(draft.sections) ? draft.sections : []);
                 setCheckedSections(Array.isArray(draft.selections) ? draft.selections : []);
@@ -180,7 +186,7 @@ const Editor = () => {
 
     return (
         <>
-        <Header markdown={markdown} onReset={handleReset} />
+        <Header markdown={markdown} onReset={handleReset} draft={draft} />
         {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
         {showTOC && (
             <DynamicTOC

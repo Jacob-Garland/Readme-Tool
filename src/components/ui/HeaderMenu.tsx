@@ -1,16 +1,18 @@
 import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
 import { toaster } from './toaster';
-import { clearDraft, clearSettings } from '@/utils/store';
+import { clearDraft, clearSettings, setDraft } from '@/utils/store';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
+import type { Draft } from '../../pages/Editor';
 
-interface HeaderMenuProps {
+type HeaderMenuProps = {
   markdown: string;
   onReset: () => void;
-}
+  draft: Draft;
+};
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => {
   // Copy logic
   const handleCopy = () => {
     try {
@@ -29,13 +31,23 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
     }
   };
 
-  // Save logic (to be updated to accept draft object from parent)
+  // Save logic: saves draft via Tauri, shows error/success toasters
   const handleSave = async () => {
-    toaster.create({
-      title: 'Draft saved',
-      description: 'Your draft has been saved successfully.',
-      type: 'success',
-    });
+    try {
+      await setDraft(draft);
+      toaster.create({
+        title: 'Draft saved',
+        description: 'Your draft has been saved successfully.',
+        type: 'success',
+      });
+    } catch (error) {
+      toaster.create({
+        title: 'Save failed',
+        description: 'There was an error saving your draft. Please try again.',
+        type: 'error',
+      });
+      console.error('Error saving draft:', error);
+    }
   };
 
   // Download logic
