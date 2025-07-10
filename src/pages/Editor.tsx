@@ -16,24 +16,7 @@ import {
   getSettings,
   setSettings
 } from "../utils/store";
-
-export type Section = {
-  id: string;
-  title: string;
-  content: string;
-};
-
-// --- Type for draft and settings returned from Tauri ---
-export type Draft = {
-  sections: Section[];
-  selections: string[];
-  markdown: string;
-};
-
-type AppSettings = {
-  preview: boolean;
-  [key: string]: any;
-};
+import type { Draft, AppSettings, Section } from "../types";
 
 const Editor = () => {
     const [sections, setSections] = useState<Section[]>([]);
