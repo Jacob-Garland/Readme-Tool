@@ -1,4 +1,4 @@
-import { Draft, AppSettings } from '../types';
+import { Draft, AppSettings } from '../types/types';
 import { invoke } from '@tauri-apps/api/core';
 
 // --- Settings State ---

@@ -4,7 +4,7 @@ import { toaster } from './toaster';
 import { clearDraft, clearSettings, setDraft } from '@/utils/store';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { Draft } from '../../types';
+import { Draft } from '../../types/types';
 
 type HeaderMenuProps = {
   markdown: string;

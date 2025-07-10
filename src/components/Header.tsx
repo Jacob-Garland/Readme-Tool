@@ -2,7 +2,7 @@ import { Box, Flex, Heading, Code } from '@chakra-ui/react';
 import BackButton from './ui/BackButton';
 import HeaderMenu from './ui/HeaderMenu';
 import { ColorModeSwitch } from './ui/color-mode';
-import { Draft } from '../types';
+import { Draft } from '../types/types';
 
 interface HeaderProps {
   markdown: string;

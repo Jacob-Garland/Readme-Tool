@@ -16,7 +16,7 @@ import {
   getSettings,
   setSettings
 } from "../utils/store";
-import type { Draft, AppSettings, Section } from "../types";
+import type { Draft, AppSettings, Section } from "../types/types";
 
 const Editor = () => {
     const [sections, setSections] = useState<Section[]>([]);
