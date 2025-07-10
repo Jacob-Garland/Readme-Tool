@@ -1,6 +1,5 @@
 import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
 import { useState, useEffect, useCallback } from "react";
-import { useLocation } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
@@ -11,24 +10,33 @@ import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import DynamicTOC from "../components/DynamicTOC";
 import {
-  saveSections,
-  loadSections,
-  saveCheckedSections,
-  loadCheckedSections,
-  saveGitView,
-  loadGitView,
-  store as tauriStore
+  getDraft,
+  setDraft,
+  clearDraft,
+  getSettings,
+  setSettings
 } from "../utils/store";
 
-export type SectionType = {
+export type Section = {
   id: string;
   title: string;
   content: string;
 };
 
+// --- Type for draft and settings returned from Tauri ---
+type EditorDraft = {
+  sections: Section[];
+  selections: string[];
+  markdown: string;
+};
+
+type AppSettings = {
+  preview: boolean;
+  [key: string]: any;
+};
+
 const Editor = () => {
-    const location = useLocation();
-    const [sections, setSections] = useState<SectionType[]>([]);
+    const [sections, setSections] = useState<Section[]>([]);
     const [checkedSections, setCheckedSections] = useState<string[]>([]);
     const [markdown, setMarkdown] = useState<string>("");
     const [isGitView, setIsGitView] = useState<boolean>(true);
@@ -46,42 +54,42 @@ const Editor = () => {
         });
     }, []);
 
-    // On mount, check for state from NewReadme and initialize sections if present
+    // On mount, load draft and settings from Tauri
     useEffect(() => {
-        if (location.state && (location.state.markdownSections || location.state.selections)) {
-            const { markdownSections = [], selections = [] } = location.state as any;
-            const newSections: SectionType[] = selections.map((sel: string, idx: number) => ({
-                id: sel,
-                title: sel,
-                content: markdownSections[idx] || ""
-            }));
-            setSections(newSections);
-            setCheckedSections(selections);
-        } else {
-            (async () => {
-                const loadedSections = await loadSections();
-                const loadedChecked = await loadCheckedSections();
-                const loadedGitView = await loadGitView();
-                if (loadedSections) setSections(loadedSections);
-                if (loadedChecked) setCheckedSections(loadedChecked);
-                if (typeof loadedGitView === "boolean") setIsGitView(loadedGitView);
-            })();
-        }
+        (async () => {
+            const draft = (await getDraft()) as EditorDraft | null;
+            if (draft && typeof draft === 'object') {
+                setSections(Array.isArray(draft.sections) ? draft.sections : []);
+                setCheckedSections(Array.isArray(draft.selections) ? draft.selections : []);
+                setMarkdown(typeof draft.markdown === 'string' ? draft.markdown : "");
+            }
+            const settings = (await getSettings()) as AppSettings | null;
+            if (settings && typeof settings.preview === "boolean") {
+                setIsGitView(settings.preview);
+            }
+        })();
     }, []);
 
-    // Save sections to store when sections change
+    // Save draft to Tauri when sections, checkedSections, or markdown change
     useEffect(() => {
-        saveSections(sections);
-    }, [sections]);
+        (async () => {
+            await setDraft({
+                sections,
+                selections: checkedSections,
+                markdown
+            });
+        })();
+    }, [sections, checkedSections, markdown]);
 
-    // Save checkedSections to store when checkedSections change
+    // Save settings to Tauri when isGitView changes
     useEffect(() => {
-        saveCheckedSections(checkedSections);
-    }, [checkedSections]);
-
-    // Save Git-View switch to store when isGitView changes
-    useEffect(() => {
-        saveGitView(isGitView);
+        (async () => {
+            const settings = await getSettings();
+            await setSettings({
+                ...(settings || {}),
+                preview: isGitView
+            });
+        })();
     }, [isGitView]);
 
     // Add section by id (only adds to checkedSections, not sections array)
@@ -130,9 +138,7 @@ const Editor = () => {
         setCheckedSections([]);
         setMarkdown("");
         // Remove from Tauri store as well
-        await tauriStore.delete("sections");
-        await tauriStore.delete("checkedSections");
-        await tauriStore.delete("isGitView");
+        await clearDraft();
     };
 
     // This is used to separate sections in the markdown output

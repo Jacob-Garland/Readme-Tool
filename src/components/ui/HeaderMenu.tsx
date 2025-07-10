@@ -1,7 +1,7 @@
 import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
 import { toaster } from './toaster';
-import { saveStore } from '@/utils/store';
+import { clearDraft, clearSettings } from '@/utils/store';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 
@@ -29,23 +29,13 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
     }
   };
 
-  // Save logic
+  // Save logic (to be updated to accept draft object from parent)
   const handleSave = async () => {
-    try {
-      await saveStore();
-      toaster.create({
-        title: 'Draft saved',
-        description: 'Your draft has been saved successfully.',
-        type: 'success',
-      });
-    } catch (error) {
-      toaster.create({
-        title: 'Save failed',
-        description: 'There was an error saving your draft. Please try again.',
-        type: 'error',
-      });
-      console.error("Error saving sections:", error);
-    }
+    toaster.create({
+      title: 'Draft saved',
+      description: 'Your draft has been saved successfully.',
+      type: 'success',
+    });
   };
 
   // Download logic
@@ -82,6 +72,27 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
   // Repository logic
   const handleRepository = () => {
     window.open('https://github.com/Jacob-Garland/Readme-Tool', '_blank', 'noopener,noreferrer');
+  };
+
+  // Reset logic for draft
+  const handleResetDraft = async () => {
+    await clearDraft();
+    onReset();
+    toaster.create({
+      title: 'Editor Reset',
+      description: 'Editor draft has been cleared.',
+      type: 'info',
+    });
+  };
+
+  // Reset logic for settings
+  const handleResetSettings = async () => {
+    await clearSettings();
+    toaster.create({
+      title: 'Settings Reset',
+      description: 'Settings have been reset to default.',
+      type: 'info',
+    });
   };
 
   return (
@@ -123,7 +134,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
               value="reset-draft"
               color="fg.error"
               _hover={{ bg: "bg.error", color: "fg.error" }}
-              onClick={onReset}
+              onClick={handleResetDraft}
             >
               <Box flex="1">Reset Editor</Box>
               <ListRestart />
@@ -132,6 +143,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
               value="reset-settings"
               color="fg.error"
               _hover={{ bg: "bg.error", color: "fg.error" }}
+              onClick={handleResetSettings}
             >
               <Box flex="1">Reset Settings</Box>
               <ListRestart />
