@@ -106,6 +106,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
                 <Copy />
                 Copy
               </Menu.Item>
+              {/* Manual Save button for draft in editor */}
               <Menu.Item
                 value="save"
                 width="14"
@@ -119,12 +120,20 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
               </Menu.Item>
             </Group>
             <Menu.Item
-              value="reset"
+              value="reset-draft"
               color="fg.error"
               _hover={{ bg: "bg.error", color: "fg.error" }}
               onClick={onReset}
             >
               <Box flex="1">Reset Editor</Box>
+              <ListRestart />
+            </Menu.Item>
+            <Menu.Item
+              value="reset-settings"
+              color="fg.error"
+              _hover={{ bg: "bg.error", color: "fg.error" }}
+            >
+              <Box flex="1">Reset Settings</Box>
               <ListRestart />
             </Menu.Item>
             <Menu.Item

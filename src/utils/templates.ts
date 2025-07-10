@@ -52,17 +52,17 @@ export const templates = [
   {
     id: "Deployment",
     title: "Deployment",
-    content: `\n## Deployment\n\nInstructions here for deploying the project.\n`
+    content: `\n## Deployment\n\nInstructions here for deploying the project.\n\n`
   },
   {
     id: "Run Locally",
     title: "Run Locally",
-    content: `\n## Run Locally\n\nSteps to run the project locally.\n\n1. Clone the repo\n\n\`\`\`bash\n git clone <repo-url>\n\`\`\`\n2. Install dependencies\n\n\`\`\`bash\n cd <repo-name>\n npm install\n\`\`\`\n3. Start the development server\n\n\`\`\`bash\n npm start\n\`\`\``
+    content: `\n## Run Locally\n\nSteps to run the project locally.\n\n1. Clone the repo\n\n\`\`\`bash\n git clone <repo-url>\n\`\`\`\n2. Install dependencies\n\n\`\`\`bash\n cd <repo-name>\n npm install\n\`\`\`\n3. Start the development server\n\n\`\`\`bash\n npm start\n\`\`\`\n\n`
   },
   {
     id: "Environment Variables",
     title: "Environment Variables",
-    content: `\n## Environment Variables\n\nList and explain environment variables here.\n\nTo run this project, you will need to add the following environment variables to your .env file:\n\n\`API_Key\`\n`
+    content: `\n## Environment Variables\n\nList and explain environment variables here.\n\nTo run this project, you will need to add the following environment variables to your .env file:\n\n\`API_Key\`\n\n`
   },
   {
     id: "Requirements",
