@@ -1,4 +1,4 @@
-import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
+import { Box, IconButton, Group, Menu, Portal, Separator } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
 import { toaster } from './toaster';
 import { useAppStore } from '../../stores/appStore';
@@ -14,6 +14,7 @@ type HeaderMenuProps = {
 const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
   const saveDraft = useEditorStore((s) => s.saveDraft);
   const saveStatus = useEditorStore((s) => s.saveStatus);
+  const resetSaveStatus = useEditorStore((s) => s.resetSaveStatus);
   const resetDraft = useEditorStore((s) => s.resetDraft);
   const clearSettings = useAppStore((s) => s.clearSettings);
   // Copy logic
@@ -114,6 +115,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
     }
     if (confirmation) {
       resetDraft();
+      resetSaveStatus();
       onReset();
       toaster.create({
         title: 'Editor Reset',
@@ -185,6 +187,14 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
                 Save
               </Menu.Item>
             </Group>
+            <Separator />
+            <Menu.Item
+              value="export"
+              onClick={handleDownload}
+            >
+              <Box flex="1">Export File</Box>
+              <Download />
+            </Menu.Item>
             <Menu.Item
               value="reset-draft"
               color="fg.error"
@@ -203,13 +213,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
               <Box flex="1">Reset Settings</Box>
               <ListRestart />
             </Menu.Item>
-            <Menu.Item
-              value="export"
-              onClick={handleDownload}
-            >
-              <Box flex="1">Export File</Box>
-              <Download />
-            </Menu.Item>
+            <Separator />
             <Menu.Item
               value="repository"
               onClick={handleRepository}

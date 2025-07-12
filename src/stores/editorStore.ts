@@ -8,6 +8,7 @@ type EditorStore = {
     resetDraft: () => void;
     addDraftSection: (section: { id: string; title: string; content: string }) => void;
     saveStatus: SaveStatus;
+    resetSaveStatus: () => void;
     lastSaved: number | null;
     error: string | null;
     setSaveStatus: (status: SaveStatus) => void;
@@ -37,6 +38,7 @@ export const useEditorStore = create<EditorStore>((set) => ({
         },
     })),
     saveStatus: "idle",
+    resetSaveStatus: () => set({ saveStatus: "idle", lastSaved: null, error: null }),
     lastSaved: null,
     error: null,
     setSaveStatus: (status) => set({ saveStatus: status }),
