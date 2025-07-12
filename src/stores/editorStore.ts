@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { createTauriStore } from '@tauri-store/zustand';
-import { Draft } from '../types/types';
+import type { Draft } from '../types/types';
 
 type EditorStore = {
     draft: Draft;
@@ -32,3 +32,5 @@ export const useEditorStore = create<EditorStore>((set) => ({
 }));
 
 export const tauriHandler = createTauriStore('editor-store', useEditorStore);
+
+await tauriHandler.start();

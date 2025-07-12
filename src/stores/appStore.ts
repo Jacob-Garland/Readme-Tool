@@ -19,3 +19,5 @@ export const useAppStore = create<AppStore>((set) => ({
 }));
 
 export const tauriHandler = createTauriStore('app-store', useAppStore);
+
+await tauriHandler.start();
