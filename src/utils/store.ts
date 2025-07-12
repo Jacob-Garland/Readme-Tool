@@ -1,5 +1,17 @@
 import { Draft, AppSettings } from '../types/types';
 import { invoke } from '@tauri-apps/api/core';
+import { Store } from '@tauri-apps/plugin-store';
+
+async function initStore() {
+  const store = await Store.load("store.json");
+
+  await store.set('settings', {});
+  await store.set('draft', {});
+  await store.save();
+  return store;
+}
+
+initStore().catch(console.error);
 
 // --- Settings State ---
 export async function getSettings() {
