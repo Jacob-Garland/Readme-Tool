@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Code } from '@chakra-ui/react';
 import BackButton from './ui/BackButton';
 import HeaderMenu from './ui/HeaderMenu';
-import StatusIndicator from './ui/StatusIndicator';
+// import StatusIndicator from './ui/StatusIndicator';
 import { ColorModeSwitch } from './ui/color-mode';
 import { Draft } from '../types/types';
 
@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ markdown, onReset, draft }) => {
                 {/* Left-side */}
                 <Flex gap={2}>
                     <BackButton />
-                    <StatusIndicator saving={draft.saving} />
+                    {/* <StatusIndicator /> */}
                 </Flex>
 
                 <Flex>

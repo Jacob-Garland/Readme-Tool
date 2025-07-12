@@ -27,7 +27,7 @@ const DynamicTOC: React.FC<DynamicTOCProps> = ({ sections, onUpdateTOC }) => {
     onUpdateTOC(tocMarkdown);
   }, [sections, onUpdateTOC]);
 
-  return null; // This component only updates the TOC markdown, no UI
+  return null; // This component only updates the TOC markdown
 };
 
 export default DynamicTOC;

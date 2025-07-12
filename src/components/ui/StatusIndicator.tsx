@@ -46,7 +46,7 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ saving }) => {
   if (saving) {
     return (
       <HStack>
-        <Spinner size="md" color="purple.500" borderWidth={"4px"} />
+        <Spinner size="md" color="yellow.600" borderWidth={"4px"} />
         <Text fontSize="md">Saving draft...</Text>
       </HStack>
     );
