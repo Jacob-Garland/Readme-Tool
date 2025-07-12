@@ -1,40 +1,47 @@
 import { Draft, AppSettings } from '../types/types';
-import { invoke } from '@tauri-apps/api/core';
 import { Store } from '@tauri-apps/plugin-store';
 
-async function initStore() {
-  const store = await Store.load("store.json");
+let store: Store | null = null;
 
-  await store.set('settings', {});
-  await store.set('draft', {});
-  await store.save();
+async function getStore(): Promise<Store> {
+  if (!store) {
+    store = await Store.load('store.json');
+  }
   return store;
 }
 
-initStore().catch(console.error);
-
 // --- Settings State ---
-export async function getSettings() {
-  return await invoke('get_settings');
+export async function getSettings(): Promise<AppSettings | null> {
+  const s = await getStore();
+  return (await s.get('settings')) as AppSettings | null;
 }
 
-export async function setSettings(settings: AppSettings) {
-  return await invoke('set_settings', { settings });
+export async function setSettings(settings: AppSettings): Promise<void> {
+  const s = await getStore();
+  await s.set('settings', settings);
+  await s.save();
 }
 
-export async function clearSettings() {
-  return await invoke('clear_settings');
+export async function clearSettings(): Promise<void> {
+  const s = await getStore();
+  await s.delete('settings');
+  await s.save();
 }
 
 // --- Editor Draft State ---
-export async function getDraft() {
-  return await invoke('get_draft');
+export async function getDraft(): Promise<Draft | null> {
+  const s = await getStore();
+  return (await s.get('draft')) as Draft | null;
 }
 
-export async function setDraft(draft: Draft) {
-  return await invoke('set_draft', { draft });
+export async function setDraft(draft: Draft): Promise<void> {
+  const s = await getStore();
+  await s.set('draft', draft);
+  await s.save();
 }
 
-export async function clearDraft() {
-  return await invoke('clear_draft');
+export async function clearDraft(): Promise<void> {
+  const s = await getStore();
+  await s.delete('draft');
+  await s.save();
 }
