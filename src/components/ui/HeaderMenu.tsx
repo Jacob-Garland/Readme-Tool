@@ -3,7 +3,7 @@ import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-re
 import { toaster } from './toaster';
 import { useAppStore } from '../../stores/appStore';
 import { useEditorStore } from '../../stores/editorStore';
-import { save } from '@tauri-apps/plugin-dialog';
+import { save, confirm } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 
 type HeaderMenuProps = {
@@ -72,6 +72,13 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
           description: 'Your file has been downloaded successfully.',
           type: 'success',
         });
+        console.log("File downloaded to:", filePath);
+      } else {
+        toaster.create({
+          title: 'Download failed',
+          description: 'There was an error downloading your file. Please try again.',
+          type: 'error',
+        });
       }
     } catch (error) {
       toaster.create({
@@ -89,14 +96,31 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
   };
 
   // Reset logic for draft
-  const handleResetDraft = () => {
-    resetDraft();
-    onReset();
-    toaster.create({
-      title: 'Editor Reset',
-      description: 'Editor draft has been cleared.',
-      type: 'info',
-    });
+  const handleResetDraft = async () => {
+    let confirmation = false;
+    try {
+      confirmation = await confirm(
+        'Are you sure you want to reset the editor? This will clear all your current draft content.',
+        {
+          title: 'Reset Editor',
+          kind: 'warning',
+          okLabel: 'Reset',
+          cancelLabel: 'Cancel',
+        }
+      );
+    } catch {
+      // Fallback for browser or if plugin fails
+      confirmation = window.confirm('Are you sure you want to reset the editor? This will clear all your current draft content.');
+    }
+    if (confirmation) {
+      resetDraft();
+      onReset();
+      toaster.create({
+        title: 'Editor Reset',
+        description: 'Editor draft has been cleared.',
+        type: 'success',
+      });
+    }
   };
 
   // Reset logic for settings
