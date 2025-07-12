@@ -1,7 +1,8 @@
 import { Box, IconButton, Group, Menu, Portal } from "@chakra-ui/react"
 import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
 import { toaster } from './toaster';
-import { clearDraft, clearSettings, setDraft } from '@/utils/store';
+import { clearSettings } from '@/utils/store';
+import { useEditorStore } from '../../stores/editorStore';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 import { Draft } from '../../types/types';
@@ -13,6 +14,8 @@ type HeaderMenuProps = {
 };
 
 const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => {
+  const setDraft = useEditorStore((s) => s.setDraft);
+  const resetDraft = useEditorStore((s) => s.resetDraft);
   // Copy logic
   const handleCopy = () => {
     try {
@@ -31,23 +34,14 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => 
     }
   };
 
-  // Save logic: saves draft via Tauri, shows error/success toasters
-  const handleSave = async () => {
-    try {
-      await setDraft(draft);
-      toaster.create({
-        title: 'Draft saved',
-        description: 'Your draft has been saved successfully.',
-        type: 'success',
-      });
-    } catch (error) {
-      toaster.create({
-        title: 'Save failed',
-        description: 'There was an error saving your draft. Please try again.',
-        type: 'error',
-      });
-      console.error('Error saving draft:', error);
-    }
+  // Save logic: saves draft via zustand store, shows success toaster
+  const handleSave = () => {
+    setDraft(draft);
+    toaster.create({
+      title: 'Draft saved',
+      description: 'Your draft has been saved successfully.',
+      type: 'success',
+    });
   };
 
   // Download logic
@@ -87,8 +81,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => 
   };
 
   // Reset logic for draft
-  const handleResetDraft = async () => {
-    await clearDraft();
+  const handleResetDraft = () => {
+    resetDraft();
     onReset();
     toaster.create({
       title: 'Editor Reset',

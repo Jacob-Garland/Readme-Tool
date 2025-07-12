@@ -9,19 +9,17 @@ import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import DynamicTOC from "../components/DynamicTOC";
-import {
-  getDraft,
-  setDraft,
-  clearDraft,
-  getSettings,
-  setSettings
-} from "../utils/store";
+import { getSettings, setSettings } from "../utils/store";
+import { useEditorStore } from "../stores/editorStore";
 import type { Draft, AppSettings, Section } from "../types/types";
 
 const Editor = () => {
-    const [sections, setSections] = useState<Section[]>([]);
-    const [checkedSections, setCheckedSections] = useState<string[]>([]);
-    const [markdown, setMarkdown] = useState<string>("");
+    const sections = useEditorStore((s) => s.draft.sections);
+    const checkedSections = useEditorStore((s) => s.draft.selections);
+    const markdown = useEditorStore((s) => s.draft.markdown);
+    const setDraft = useEditorStore((s) => s.setDraft);
+    const resetDraft = useEditorStore((s) => s.resetDraft);
+    const addDraftSection = useEditorStore((s) => s.addDraftSection);
     const [isGitView, setIsGitView] = useState<boolean>(true);
 
     const draft: Draft = {
@@ -32,26 +30,18 @@ const Editor = () => {
 
     // Helper to update the TOC section content dynamically
     const updateTOCSection = useCallback((tocMarkdown: string) => {
-        setSections(prevSections => {
-            const idx = prevSections.findIndex(s => s.id === "Table of Contents");
-            if (idx === -1) return prevSections;
-            // Only update if content is different
-            if (prevSections[idx].content === tocMarkdown) return prevSections;
-            const updated = [...prevSections];
-            updated[idx] = { ...updated[idx], content: tocMarkdown };
-            return updated;
-        });
-    }, []);
+        const idx = sections.findIndex(s => s.id === "Table of Contents");
+        if (idx === -1) return;
+        if (sections[idx].content === tocMarkdown) return;
+        const updated = [...sections];
+        updated[idx] = { ...updated[idx], content: tocMarkdown };
+        setDraft({ ...draft, sections: updated });
+    }, [sections, draft, setDraft]);
 
     // On mount, load draft and settings from Tauri
     useEffect(() => {
         (async () => {
-            const draft = (await getDraft()) as Draft | null;
-            if (draft && typeof draft === 'object') {
-                setSections(Array.isArray(draft.sections) ? draft.sections : []);
-                setCheckedSections(Array.isArray(draft.selections) ? draft.selections : []);
-                setMarkdown(typeof draft.markdown === 'string' ? draft.markdown : "");
-            }
+            // Only load settings from tauri store, not draft (handled by zustand persistence)
             const settings = (await getSettings()) as AppSettings | null;
             if (settings && typeof settings.preview === "boolean") {
                 setIsGitView(settings.preview);
@@ -60,15 +50,7 @@ const Editor = () => {
     }, []);
 
     // Save draft to Tauri when sections, checkedSections, or markdown change
-    useEffect(() => {
-        (async () => {
-            await setDraft({
-                sections,
-                selections: checkedSections,
-                markdown
-            });
-        })();
-    }, [sections, checkedSections, markdown]);
+    // (Draft persistence is handled by zustand/tauri-store plugin, so no effect needed)
 
     // Save settings to Tauri when isGitView changes
     useEffect(() => {
@@ -84,12 +66,14 @@ const Editor = () => {
     // Add section by id (only adds to checkedSections, not sections array)
     const handleAddSection = (sectionId: string) => {
         // If not already in checkedSections, add it
-        setCheckedSections(prev => prev.includes(sectionId) ? prev : [...prev, sectionId]);
+        if (!checkedSections.includes(sectionId)) {
+            setDraft({ ...draft, selections: [...checkedSections, sectionId] });
+        }
         // If not already in sections, add from template
         if (!sections.find(s => s.id === sectionId)) {
             const template = templates.find(t => t.id === sectionId);
             if (template) {
-                setSections(prev => [...prev, { ...template }]);
+                addDraftSection({ ...template });
             }
         }
     };
@@ -97,37 +81,31 @@ const Editor = () => {
     // Toggle checked state
     const handleToggleSection = (id: string, checked: boolean) => {
         if (checked) {
-            // Add to checkedSections if not present
-            setCheckedSections(prev => prev.includes(id) ? prev : [...prev, id]);
+            if (!checkedSections.includes(id)) {
+                setDraft({ ...draft, selections: [...checkedSections, id] });
+            }
         } else {
-            // Remove from checkedSections, but keep in sections array
-            setCheckedSections(prev => prev.filter(t => t !== id));
+            setDraft({ ...draft, selections: checkedSections.filter(t => t !== id) });
         }
     };
 
     // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
         // Prevent Title from being reordered
-        if (checkedSections[0] === 'Title') {
-            if (newOrder[0] !== 'Title') {
-                // Move Title back to the top
-                newOrder = ['Title', ...newOrder.filter(id => id !== 'Title')];
-            }
+        let order = newOrder;
+        if (checkedSections[0] === 'Title' && newOrder[0] !== 'Title') {
+            order = ['Title', ...newOrder.filter(id => id !== 'Title')];
         }
-        setCheckedSections(prev => newOrder.filter(id => prev.includes(id)));
-        setSections(prev => {
-            const idToSection = Object.fromEntries(prev.map(s => [s.id, s]));
-            return newOrder.map(id => idToSection[id]).filter(Boolean);
+        setDraft({
+            ...draft,
+            selections: order.filter(id => checkedSections.includes(id)),
+            sections: order.map(id => sections.find(s => s.id === id)).filter(Boolean) as Section[],
         });
     };
 
     // Reset all
     const handleReset = async () => {
-        setSections([]);
-        setCheckedSections([]);
-        setMarkdown("");
-        // Remove from Tauri store as well
-        await clearDraft();
+        resetDraft();
     };
 
     // This is used to separate sections in the markdown output
@@ -137,7 +115,7 @@ const Editor = () => {
     useEffect(() => {
         // Only include sections that are checked, in the current order of checkedSections
         const checked = sections.filter(s => checkedSections.includes(s.id));
-        setMarkdown(checked.map(s => s.content).join(SECTION_DELIMITER));
+        setDraft({ ...draft, markdown: checked.map(s => s.content).join(SECTION_DELIMITER) });
     }, [sections, checkedSections]);
 
     // --- Dynamic TOC logic ---
@@ -148,14 +126,14 @@ const Editor = () => {
     function handleInsertBadge(badgeMarkdown: string, opts?: { section?: string }) {
         if (opts?.section && opts.section === "Badges") {
             // Find the Badges section and append the badge
-            setSections(prevSections => prevSections.map(s =>
+            const updatedSections = sections.map(s =>
                 s.id === "Badges"
                     ? { ...s, content: s.content + (s.content.trim() ? "\n" : "") + badgeMarkdown + "\n" }
                     : s
-            ));
+            );
+            setDraft({ ...draft, sections: updatedSections });
         } else {
-            // Insert at the end of the current markdown (or implement cursor logic if available)
-            setMarkdown(prev => prev + (prev.trim() ? "\n" : "") + badgeMarkdown + "\n");
+            setDraft({ ...draft, markdown: markdown + (markdown.trim() ? "\n" : "") + badgeMarkdown + "\n" });
         }
     }
 
@@ -163,7 +141,7 @@ const Editor = () => {
     function handleInsertMarkdownComponent(componentId: string) {
         const template = templates.find(t => t.id === componentId);
         if (template) {
-            setMarkdown(prev => prev + (prev.trim() ? "\n" : "") + template.content + "\n");
+            setDraft({ ...draft, markdown: markdown + (markdown.trim() ? "\n" : "") + template.content + "\n" });
         }
     }
 
@@ -221,12 +199,12 @@ const Editor = () => {
                                     value={markdown}
                                     onChange={(val) => {
                                         const newContents = val.split(SECTION_DELIMITER);
-                                        setSections(prevSections =>
-                                        prevSections.map((section, idx) => ({
+                                        // Update each section's content in the store
+                                        const updatedSections = sections.map((section, idx) => ({
                                             ...section,
                                             content: newContents[idx] !== undefined ? newContents[idx] : ""
-                                        }))
-                                        );
+                                        }));
+                                        setDraft({ ...draft, sections: updatedSections });
                                     }}
                                     height="77vh"
                                     width="75%"

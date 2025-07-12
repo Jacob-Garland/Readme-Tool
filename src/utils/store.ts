@@ -1,4 +1,4 @@
-import { Draft, AppSettings } from '../types/types';
+import { AppSettings } from '../types/types';
 import { Store } from '@tauri-apps/plugin-store';
 
 let store: Store | null = null;
@@ -25,23 +25,5 @@ export async function setSettings(settings: AppSettings): Promise<void> {
 export async function clearSettings(): Promise<void> {
   const s = await getStore();
   await s.delete('settings');
-  await s.save();
-}
-
-// --- Editor Draft State ---
-export async function getDraft(): Promise<Draft | null> {
-  const s = await getStore();
-  return (await s.get('draft')) as Draft | null;
-}
-
-export async function setDraft(draft: Draft): Promise<void> {
-  const s = await getStore();
-  await s.set('draft', draft);
-  await s.save();
-}
-
-export async function clearDraft(): Promise<void> {
-  const s = await getStore();
-  await s.delete('draft');
   await s.save();
 }
