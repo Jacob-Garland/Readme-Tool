@@ -9,9 +9,11 @@ interface HeaderProps {
   markdown: string;
   onReset: () => void;
   draft: Draft;
+  colorMode: "light" | "dark";
+  setColorMode: (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ markdown, onReset, draft }) => {
+const Header: React.FC<HeaderProps> = ({ markdown, onReset, draft, colorMode, setColorMode }) => {
     return (
         <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"}>
             <Flex align="center" justify="space-between">
@@ -29,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ markdown, onReset, draft }) => {
         
                 {/* Right-side */}
                 <Flex gap={2}>
-                    <ColorModeSwitch />
+                    <ColorModeSwitch colorMode={colorMode} setColorMode={setColorMode} />
                     <HeaderMenu markdown={markdown} onReset={onReset} draft={draft} />
                 </Flex>
             </Flex>

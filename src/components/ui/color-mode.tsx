@@ -39,25 +39,31 @@ export function useColorModeValue<T>(light: T, dark: T) {
   return colorMode === "dark" ? dark : light
 }
 
-interface ColorModeSwitchProps extends Omit<IconButtonProps, "aria-label"> {}
+interface ColorModeSwitchProps extends Omit<IconButtonProps, "aria-label"> {
+  colorMode: "light" | "dark";
+  setColorMode: (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
+}
 
 export const ColorModeSwitch = React.forwardRef<
   HTMLButtonElement,
   ColorModeSwitchProps
->(function ColorModeSwitch(props, ref) {
-  const { toggleColorMode } = useColorMode()
+>(function ColorModeSwitch({ colorMode, setColorMode, ...props }, ref) {
+  // Toggle between light and dark using the provided setColorMode
+  const handleToggle = () => {
+    setColorMode((prev) => (prev === "dark" ? "light" : "dark"));
+  };
   return (
-    <Switch.Root colorPalette="purple" size="lg">
+    <Switch.Root colorPalette="purple" size="lg" checked={colorMode === "dark"}>
       <Switch.HiddenInput />
-      <Switch.Control  onClick={toggleColorMode} ref={ref} {...props}>
+      <Switch.Control onClick={handleToggle} ref={ref} {...props}>
         <Switch.Thumb />
         <Switch.Indicator fallback={<Icon as={Moon} color="gray.600" />}>
           <Icon as={Sun} color="yellow.400" />
         </Switch.Indicator>
       </Switch.Control>
     </Switch.Root>
-  )
-})
+  );
+});
 
 export const LightMode = React.forwardRef<HTMLSpanElement, SpanProps>(
   function LightMode(props, ref) {

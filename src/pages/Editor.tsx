@@ -1,5 +1,5 @@
 import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
@@ -9,9 +9,9 @@ import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
 import DynamicTOC from "../components/DynamicTOC";
-import { getSettings, setSettings } from "../utils/store";
+import { useAppStore } from "../stores/appStore";
 import { useEditorStore } from "../stores/editorStore";
-import type { Draft, AppSettings, Section } from "../types/types";
+import type { Draft, Section } from "../types/types";
 
 const Editor = () => {
     const sections = useEditorStore((s) => s.draft.sections);
@@ -20,7 +20,17 @@ const Editor = () => {
     const setDraft = useEditorStore((s) => s.setDraft);
     const resetDraft = useEditorStore((s) => s.resetDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
-    const [isGitView, setIsGitView] = useState<boolean>(true);
+    // Provide default settings: light mode and Git-View
+    const settings = useAppStore((s) => s.settings) || { colorMode: "light", preview: true };
+    const colorMode = settings.colorMode ?? "light";
+    const isGitView = settings.preview ?? true;
+    const setSettings = useAppStore((s) => s.setSettings);
+
+    // Handler to update color mode in settings (accepts string or updater fn)
+    const handleSetColorMode = (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => {
+        const next = typeof value === "function" ? value(colorMode) : value;
+        setSettings({ ...settings, colorMode: next });
+    };
 
     const draft: Draft = {
         sections,
@@ -38,30 +48,12 @@ const Editor = () => {
         setDraft({ ...draft, sections: updated });
     }, [sections, draft, setDraft]);
 
-    // On mount, load draft and settings from Tauri
-    useEffect(() => {
-        (async () => {
-            // Only load settings from tauri store, not draft (handled by zustand persistence)
-            const settings = (await getSettings()) as AppSettings | null;
-            if (settings && typeof settings.preview === "boolean") {
-                setIsGitView(settings.preview);
-            }
-        })();
-    }, []);
 
-    // Save draft to Tauri when sections, checkedSections, or markdown change
-    // (Draft persistence is handled by zustand/tauri-store plugin, so no effect needed)
-
-    // Save settings to Tauri when isGitView changes
-    useEffect(() => {
-        (async () => {
-            const settings = await getSettings();
-            await setSettings({
-                ...(settings || {}),
-                preview: isGitView
-            });
-        })();
-    }, [isGitView]);
+    // Handler to update preview mode in settings
+    const handleSetPreview = (value: boolean | ((prev: boolean) => boolean)) => {
+        const next = typeof value === "function" ? value(isGitView) : value;
+        setSettings({ ...settings, preview: next });
+    };
 
     // Add section by id (only adds to checkedSections, not sections array)
     const handleAddSection = (sectionId: string) => {
@@ -147,7 +139,13 @@ const Editor = () => {
 
     return (
         <>
-        <Header markdown={markdown} onReset={handleReset} draft={draft} />
+        <Header
+            markdown={markdown}
+            onReset={handleReset}
+            draft={draft}
+            colorMode={colorMode}
+            setColorMode={handleSetColorMode}
+        />
         {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
         {showTOC && (
             <DynamicTOC
@@ -270,7 +268,7 @@ const Editor = () => {
                                         Selections
                                     </Heading>
                                     <Flex justifyContent="center" mb={4}>
-                                        <PreviewSwitch isGitView={isGitView} setIsGitView={setIsGitView} />
+                                        <PreviewSwitch isGitView={isGitView} setIsGitView={handleSetPreview} />
                                     </Flex>
                                     <Selections
                                         selectedSections={sections.map(s => s.id)}
