@@ -142,7 +142,6 @@ const Editor = () => {
         <Header
             markdown={markdown}
             onReset={handleReset}
-            draft={draft}
             colorMode={colorMode}
             setColorMode={handleSetColorMode}
         />

@@ -5,17 +5,17 @@ import { useAppStore } from '../../stores/appStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
-import { Draft } from '../../types/types';
 
 type HeaderMenuProps = {
   markdown: string;
   onReset: () => void;
-  draft: Draft;
 };
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => {
-  const setDraft = useEditorStore((s) => s.setDraft);
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
+  const saveDraft = useEditorStore((s) => s.saveDraft);
+  const saveStatus = useEditorStore((s) => s.saveStatus);
   const resetDraft = useEditorStore((s) => s.resetDraft);
+  const clearSettings = useAppStore((s) => s.clearSettings);
   // Copy logic
   const handleCopy = () => {
     try {
@@ -35,13 +35,21 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => 
   };
 
   // Save logic: saves draft via zustand store, shows success toaster
-  const handleSave = () => {
-    setDraft(draft);
-    toaster.create({
-      title: 'Draft saved',
-      description: 'Your draft has been saved successfully.',
-      type: 'success',
-    });
+  const handleSave = async () => {
+    await saveDraft();
+    if (saveStatus === "saved") {
+      toaster.create({
+        title: 'Draft saved',
+        description: 'Your draft has been saved successfully.',
+        type: 'success',
+      });
+    } else if (saveStatus === "error") {
+      toaster.create({
+        title: 'Save failed',
+        description: 'There was an error saving your draft.',
+        type: 'error',
+      });
+    }
   };
 
   // Download logic
@@ -92,7 +100,6 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset, draft }) => 
   };
 
   // Reset logic for settings
-  const clearSettings = useAppStore((s) => s.clearSettings);
   const handleResetSettings = () => {
     clearSettings();
     toaster.create({

@@ -1,30 +1,26 @@
 import { HStack, Spinner, Status, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
+import { useEditorStore } from '../../stores/editorStore';
 
-// Props: saving (true when saving), onSave (callback to reset timer)
-interface StatusIndicatorProps {
-  saving: boolean;
-}
-
-// This component shows a loading spinner or a status indicator based on the saving prop
+// This component shows a loading spinner or a status indicator based on the saveStatus in the store
 // Shows a live-updating timer for seconds since last save, resets on save
-const StatusIndicator: React.FC<StatusIndicatorProps> = ({ saving }) => {
+const StatusIndicator: React.FC = () => {
+  const saveStatus = useEditorStore((s) => s.saveStatus);
   const [secondsSinceSave, setSecondsSinceSave] = useState(0);
-  const prevSaving = useRef(false);
+  const prevStatus = useRef<null | string>(null);
   const intervalRef = useRef<number | null>(null);
 
   // Start timer when not saving, reset on save
   useEffect(() => {
-    // If just finished saving, reset timer
-    if (prevSaving.current && !saving) {
+    if (prevStatus.current === "saving" && saveStatus === "saved") {
       setSecondsSinceSave(0);
     }
-    prevSaving.current = saving;
-  }, [saving]);
+    prevStatus.current = saveStatus;
+  }, [saveStatus]);
 
   // Increment timer every second when not saving
   useEffect(() => {
-    if (!saving) {
+    if (saveStatus === "saved") {
       intervalRef.current = setInterval(() => {
         setSecondsSinceSave((s) => s + 1);
       }, 1000);
@@ -41,9 +37,9 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ saving }) => {
         intervalRef.current = null;
       }
     };
-  }, [saving]);
+  }, [saveStatus]);
 
-  if (saving) {
+  if (saveStatus === "saving") {
     return (
       <HStack>
         <Spinner size="md" color="yellow.600" borderWidth={"4px"} />
@@ -51,12 +47,20 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({ saving }) => {
       </HStack>
     );
   }
-
+  if (saveStatus === "error") {
+    return (
+      <Status.Root colorPalette="red">
+        <Status.Indicator />
+        <Text fontSize="md">Save failed</Text>
+      </Status.Root>
+    );
+  }
+  // Show autosave status if lastSaved is recent
   return (
     <Status.Root colorPalette="green">
       <Status.Indicator />
       <Text fontSize="md">
-        Draft Saved{secondsSinceSave > 0 ? ` ${secondsSinceSave} second${secondsSinceSave === 1 ? '' : 's'} ago` : ''}
+        Draft Saved{secondsSinceSave > 0 ? ` ${secondsSinceSave} second${secondsSinceSave === 1 ? '' : 's'} ago` : ''} (autosave enabled)
       </Text>
     </Status.Root>
   );
