@@ -20,17 +20,10 @@ const Editor = () => {
     const setDraft = useEditorStore((s) => s.setDraft);
     const resetDraft = useEditorStore((s) => s.resetDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
-    // Provide default settings: light mode and Git-View
-    const settings = useAppStore((s) => s.settings) || { colorMode: "light", preview: true };
-    const colorMode = settings.colorMode ?? "light";
+    // Provide default settings: Git-View
+    const settings = useAppStore((s) => s.settings) || { preview: true };
     const isGitView = settings.preview ?? true;
     const setSettings = useAppStore((s) => s.setSettings);
-
-    // Handler to update color mode in settings (accepts string or updater fn)
-    const handleSetColorMode = (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => {
-        const next = typeof value === "function" ? value(colorMode) : value;
-        setSettings({ ...settings, colorMode: next });
-    };
 
     const draft: Draft = {
         sections,
@@ -142,8 +135,6 @@ const Editor = () => {
         <Header
             markdown={markdown}
             onReset={handleReset}
-            colorMode={colorMode}
-            setColorMode={handleSetColorMode}
         />
         {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
         {showTOC && (

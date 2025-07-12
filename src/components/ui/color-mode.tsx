@@ -1,4 +1,4 @@
-import type { IconButtonProps, SpanProps } from "@chakra-ui/react"
+import type { SpanProps } from "@chakra-ui/react"
 import { Icon, Span, Switch } from "@chakra-ui/react"
 import { ThemeProvider, useTheme } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
@@ -39,23 +39,14 @@ export function useColorModeValue<T>(light: T, dark: T) {
   return colorMode === "dark" ? dark : light
 }
 
-interface ColorModeSwitchProps extends Omit<IconButtonProps, "aria-label"> {
-  colorMode: "light" | "dark";
-  setColorMode: (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
-}
-
 export const ColorModeSwitch = React.forwardRef<
-  HTMLButtonElement,
-  ColorModeSwitchProps
->(function ColorModeSwitch({ colorMode, setColorMode, ...props }, ref) {
-  // Toggle between light and dark using the provided setColorMode
-  const handleToggle = () => {
-    setColorMode((prev) => (prev === "dark" ? "light" : "dark"));
-  };
+  HTMLButtonElement
+>(function ColorModeSwitch({ ...props }, ref) {
+  const { colorMode, toggleColorMode } = useColorMode()
   return (
     <Switch.Root colorPalette="purple" size="lg" checked={colorMode === "dark"}>
       <Switch.HiddenInput />
-      <Switch.Control onClick={handleToggle} ref={ref} {...props}>
+      <Switch.Control onClick={toggleColorMode} ref={ref} {...props}>
         <Switch.Thumb />
         <Switch.Indicator fallback={<Icon as={Moon} color="gray.600" />}>
           <Icon as={Sun} color="yellow.400" />

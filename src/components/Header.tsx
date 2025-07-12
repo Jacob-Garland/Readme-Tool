@@ -7,29 +7,28 @@ import { ColorModeSwitch } from './ui/color-mode';
 interface HeaderProps {
   markdown: string;
   onReset: () => void;
-  colorMode: "light" | "dark";
-  setColorMode: (value: "light" | "dark" | ((prev: "light" | "dark") => "light" | "dark")) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ markdown, onReset, colorMode, setColorMode }) => {
+const Header: React.FC<HeaderProps> = ({ markdown, onReset }) => {
     return (
-        <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"}>
-            <Flex align="center" justify="space-between">
+        <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"} position="relative">
+            <Flex align="center" justify="space-between" position="relative">
                 {/* Left-side */}
-                <Flex gap={2}>
+                <Flex gap={2} minW="220px">
                     <BackButton />
                     <StatusIndicator />
                 </Flex>
 
-                <Flex>
+                {/* Center heading absolutely centered */}
+                <Box position="absolute" left="50%" top="50%" style={{ transform: 'translate(-50%, -50%)' }} zIndex={1} w="max-content">
                     <Heading size="lg" textAlign="center">
                         The Ultimate <Code size={"lg"} p={2}>README.md</Code> Tool
                     </Heading>
-                </Flex>
-        
+                </Box>
+
                 {/* Right-side */}
-                <Flex gap={2}>
-                    <ColorModeSwitch colorMode={colorMode} setColorMode={setColorMode} />
+                <Flex gap={2} minW="180px" justify="flex-end">
+                    <ColorModeSwitch />
                     <HeaderMenu markdown={markdown} onReset={onReset} />
                 </Flex>
             </Flex>
