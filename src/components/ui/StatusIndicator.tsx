@@ -55,12 +55,20 @@ const StatusIndicator: React.FC = () => {
       </Status.Root>
     );
   }
-  // Show autosave status if lastSaved is recent
+  // Show autosave status with seconds/minutes
+  let timeString = '';
+  if (secondsSinceSave > 0 && secondsSinceSave < 60) {
+    timeString = ` ${secondsSinceSave} second${secondsSinceSave === 1 ? '' : 's'} ago`;
+  } else if (secondsSinceSave >= 60) {
+    const minutes = Math.floor(secondsSinceSave / 60);
+    timeString = ` ${minutes} minute${minutes === 1 ? '' : 's'} ago`;
+  }
+  
   return (
     <Status.Root colorPalette="green">
       <Status.Indicator />
       <Text fontSize="md">
-        Draft Saved{secondsSinceSave > 0 ? ` ${secondsSinceSave} second${secondsSinceSave === 1 ? '' : 's'} ago` : ''} (autosave enabled)
+        Draft Saved{timeString}
       </Text>
     </Status.Root>
   );
