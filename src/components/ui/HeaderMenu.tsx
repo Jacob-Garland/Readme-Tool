@@ -102,7 +102,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
       confirmation = await confirm(
         'Are you sure you want to reset the editor? This will clear all your current draft content.',
         {
-          title: 'Reset Editor',
+          title: 'Ultimate README Tool: WARNING!',
           kind: 'warning',
           okLabel: 'Reset',
           cancelLabel: 'Cancel',
@@ -124,13 +124,30 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
   };
 
   // Reset logic for settings
-  const handleResetSettings = () => {
-    clearSettings();
-    toaster.create({
-      title: 'Settings Reset',
-      description: 'Settings have been reset to default.',
-      type: 'info',
-    });
+  const handleResetSettings = async () => {
+    let confirmation = false;
+    try {
+      confirmation = await confirm(
+        'Are you sure you want to reset settings? This will reset the app settings to default.',
+        {
+          title: 'Ultimate README Tool: WARNING!',
+          kind: 'warning',
+          okLabel: 'Reset',
+          cancelLabel: 'Cancel',
+        }
+      );
+    } catch {
+      // Fallback for browser or if plugin fails
+      confirmation = window.confirm('Are you sure you want to reset settings? This will clear all your custom settings.');
+    }
+    if (confirmation) {
+      clearSettings();
+      toaster.create({
+        title: 'Settings Reset',
+        description: 'Settings have been reset to default.',
+        type: 'info',
+      });
+    };
   };
 
   return (
