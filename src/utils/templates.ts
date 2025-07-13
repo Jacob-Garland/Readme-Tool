@@ -2,7 +2,7 @@ export const templates = [
   {
     id: "Blank Section",
     title: "New Custom Section",
-    content: `\n## New Custom Section\n\nType or add your section here.\n\n`
+    content: `## New Custom Section\n\nType or add your section here.\n\n`
   },
   {
     id: "Title",
@@ -17,77 +17,77 @@ export const templates = [
   {
     id: "Introduction",
     title: "About The Project",
-    content: `\n## About The Project\n\nA brief description of your project here, explaining your motivation for building it and what problem it solves.\n\n`
+    content: `## About The Project\n\nA brief description of your project here, explaining your motivation for building it and what problem it solves.\n\n`
   },
   {
     id: "Installation",
     title: "Installation",
-    content: `\n## Installation\n\nInstructions here on how to install.\n\n`
+    content: `## Installation\n\nInstructions here on how to install.\n\n`
   },
   {
     id: "Usage",
     title: "Usage",
-    content: `\n## Usage\n\nInstructions here on how to use the project.\n\n`
+    content: `## Usage\n\nInstructions here on how to use the project.\n\n`
   },
   {
     id: "Contributing",
     title: "Contributing",
-    content: `\n## Contributing\n\nHere you can explain how others can contribute to your project.\n\n`
+    content: `## Contributing\n\nHere you can explain how others can contribute to your project.\n\n`
   },
   {
     id: "Tech Stack",
     title: "Technologies Used",
-    content: `\n## Technologies Used\n\nList the technologies used here.\n\n`
+    content: `## Technologies Used\n\nList the technologies used here.\n\n`
   },
   {
     id: "Credits",
     title: "Credits",
-    content: `\n## Credits\n\nAcknowledgements to other contributors and sources here.\n\n`
+    content: `## Credits\n\nAcknowledgements to other contributors and sources here.\n\n`
   },
   {
     id: "Features",
     title: "Features",
-    content: `\n## Features\n\nList of features.\n- Feature 1\n- Feature 2\n- Feature 3\n\n`
+    content: `## Features\n\nList of features.\n- Feature 1\n- Feature 2\n- Feature 3\n\n`
   },
   {
     id: "Deployment",
     title: "Deployment",
-    content: `\n## Deployment\n\nInstructions here for deploying the project.\n\n`
+    content: `## Deployment\n\nInstructions here for deploying the project.\n\n`
   },
   {
     id: "Run Locally",
     title: "Run Locally",
-    content: `\n## Run Locally\n\nSteps to run the project locally.\n\n1. Clone the repo\n\n\`\`\`bash\n git clone <repo-url>\n\`\`\`\n2. Install dependencies\n\n\`\`\`bash\n cd <repo-name>\n npm install\n\`\`\`\n3. Start the development server\n\n\`\`\`bash\n npm start\n\`\`\`\n\n`
+    content: `## Run Locally\n\nSteps to run the project locally.\n\n1. Clone the repo\n\n\`\`\`bash\n git clone <repo-url>\n\`\`\`\n2. Install dependencies\n\n\`\`\`bash\n cd <repo-name>\n npm install\n\`\`\`\n3. Start the development server\n\n\`\`\`bash\n npm start\n\`\`\`\n\n`
   },
   {
     id: "Environment Variables",
     title: "Environment Variables",
-    content: `\n## Environment Variables\n\nList and explain environment variables here.\n\nTo run this project, you will need to add the following environment variables to your .env file:\n\n\`API_Key\`\n\n`
+    content: `## Environment Variables\n\nList and explain environment variables here.\n\nTo run this project, you will need to add the following environment variables to your .env file:\n\n\`API_Key\`\n\n`
   },
   {
     id: "Requirements",
     title: "Requirements",
-    content: `\n## Requirements\n\nList requirements for the project, if any.\n\n`
+    content: `## Requirements\n\nList requirements for the project, if any.\n\n`
   },
   {
     id: "FAQ",
     title: "FAQ",
-    content: `\n## FAQ\n\nFrequently Asked Questions.\n\nYou can add common questions and answers here to help users understand your project better.\n\n1. **Question 1**: Answer to question 1.\n2. **Question 2**: Answer to question 2.\n3. **Question 3**: Answer to question 3.\n\n`
+    content: `## FAQ\n\nFrequently Asked Questions.\n\nYou can add common questions and answers here to help users understand your project better.\n\n1. **Question 1**: Answer to question 1.\n2. **Question 2**: Answer to question 2.\n3. **Question 3**: Answer to question 3.\n\n`
   },
   {
     id: "Badges",
     title: "Badges",
-    content: `\n## Badges\n\nAdd badges here for your project.\n\nCheck out the badges hosted by [shields.io](https://shields.io/).\n\n`
+    content: `## Badges\n\nAdd badges here for your project.\n\nCheck out the badges hosted by [shields.io](https://shields.io/).\n\n`
   },
   {
     id: "Table of Contents",
     title: "Table of Contents",
-    content: `\n## Table of Contents\n\n- [License](#license)\n- [Credits](#credits)\n\n`
+    content: `## Table of Contents\n\n- [License](#license)\n- [Credits](#credits)\n\n`
   },
   {
     id: "License",
     title: "License",
-    content: `\n## License\n\nThis project is licensed under the [NAME HERE] License. Please refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`
+    content: `## License\n\nThis project is licensed under the [NAME HERE] License. Please refer to the LICENSE.md file for more details.\n\nIf you need help choosing a license, refer to [https://choosealicense.com/](https://choosealicense.com/).\n`
   },
   {
     id: "Image",
