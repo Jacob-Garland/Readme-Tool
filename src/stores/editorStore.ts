@@ -3,16 +3,21 @@ import { createTauriStore, setAutosave } from '@tauri-store/zustand';
 import type { Draft, SaveStatus } from '../types/types';
 
 type EditorStore = {
+    // Draft management
     draft: Draft;
     setDraft: (draft: Draft) => void;
     resetDraft: () => void;
     addDraftSection: (section: { id: string; title: string; content: string }) => void;
+    // Save functionality
     saveDraft: () => Promise<void>;
     saveStatus: SaveStatus;
     resetSaveStatus: () => void;
-    lastSaved: number | null;
-    error: string | null;
     setSaveStatus: (status: SaveStatus) => void;
+    lastSaved: number | null;
+    autoSaveEnabled: boolean;
+    toggleAutoSave: (enabled: boolean) => void;
+    // Error handling
+    error: string | null;
     setError: (error: string | null) => void;
 };
 
@@ -52,6 +57,8 @@ export const useEditorStore = create<EditorStore>((set) => ({
             set({ saveStatus: "error", error: e?.message || "Save failed" });
         }
     },
+    autoSaveEnabled: true,
+    toggleAutoSave: (enabled) => set({ autoSaveEnabled: enabled }),
 }));
 
 // For Tauri persistence and multi-window sync

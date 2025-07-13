@@ -1,5 +1,5 @@
-import { Box, IconButton, Group, Menu, Portal, Separator } from "@chakra-ui/react"
-import { Copy, Download, ListRestart, Save, Github, SquareMenu } from "lucide-react"
+import { Box, IconButton, Group, Menu, Portal, Separator, Switch } from "@chakra-ui/react"
+import { Copy, Download, ListRestart, Save, Github, SquareMenu, X, Check } from "lucide-react"
 import { toaster } from './toaster';
 import { useAppStore } from '../../stores/appStore';
 import { useEditorStore } from '../../stores/editorStore';
@@ -15,7 +15,10 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
   const saveStatus = useEditorStore((s) => s.saveStatus);
   const resetSaveStatus = useEditorStore((s) => s.resetSaveStatus);
   const resetDraft = useEditorStore((s) => s.resetDraft);
+  const autoSaveEnabled = useEditorStore((s) => s.autoSaveEnabled);
+  const toggleAutoSave = useEditorStore((s) => s.toggleAutoSave);
   const clearSettings = useAppStore((s) => s.clearSettings);
+  
   // Copy logic
   const handleCopy = () => {
     try {
@@ -185,7 +188,24 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
                 Save
               </Menu.Item>
             </Group>
-            <Separator />
+            <Separator size={"lg"}/>
+            {/* Autosave toggle - use a flex row, not a Menu.Item, to avoid menu close */}
+            <Box px={3} py={2} display="flex" alignItems="center" gap={3} userSelect="none"
+              onPointerDownCapture={e => e.stopPropagation()}>
+              <Switch.Root
+                size="lg"
+                checked={autoSaveEnabled}
+                onCheckedChange={(details) => toggleAutoSave(details.checked)}
+              >
+                <Switch.HiddenInput />
+                <Switch.Label>Autosave</Switch.Label>
+                <Switch.Control>
+                  <Switch.Thumb>
+                    <Switch.ThumbIndicator fallback={<X color="black" />}>{autoSaveEnabled ? <Check /> : <X color="black" />}</Switch.ThumbIndicator>
+                  </Switch.Thumb>
+                </Switch.Control>
+              </Switch.Root>
+            </Box>
             <Menu.Item
               value="export"
               onClick={handleDownload}
@@ -211,7 +231,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
               <Box flex="1">Reset Settings</Box>
               <ListRestart />
             </Menu.Item>
-            <Separator />
+            <Separator size={"lg"}/>
             <Menu.Item
               value="repository"
               onClick={handleRepository}
