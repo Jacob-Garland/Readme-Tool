@@ -7,13 +7,13 @@ type EditorStore = {
     setDraft: (draft: Draft) => void;
     resetDraft: () => void;
     addDraftSection: (section: { id: string; title: string; content: string }) => void;
+    saveDraft: () => Promise<void>;
     saveStatus: SaveStatus;
     resetSaveStatus: () => void;
     lastSaved: number | null;
     error: string | null;
     setSaveStatus: (status: SaveStatus) => void;
     setError: (error: string | null) => void;
-    saveDraft: () => Promise<void>;
 };
 
 

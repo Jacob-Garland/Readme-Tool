@@ -6,10 +6,9 @@ import { ColorModeSwitch } from './ui/color-mode';
 
 interface HeaderProps {
   markdown: string;
-  onReset: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ markdown, onReset }) => {
+const Header: React.FC<HeaderProps> = ({ markdown }) => {
     return (
         <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"} position="relative">
             <Flex align="center" justify="space-between" position="relative">
@@ -29,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ markdown, onReset }) => {
                 {/* Right-side */}
                 <Flex gap={2} minW="180px" justify="flex-end">
                     <ColorModeSwitch />
-                    <HeaderMenu markdown={markdown} onReset={onReset} />
+                    <HeaderMenu markdown={markdown} />
                 </Flex>
             </Flex>
         </Box>

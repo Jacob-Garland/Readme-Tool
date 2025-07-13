@@ -18,7 +18,6 @@ const Editor = () => {
     const checkedSections = useEditorStore((s) => s.draft.selections);
     const markdown = useEditorStore((s) => s.draft.markdown);
     const setDraft = useEditorStore((s) => s.setDraft);
-    const resetDraft = useEditorStore((s) => s.resetDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
     // Provide default settings: Git-View
     const settings = useAppStore((s) => s.settings) || { preview: true };
@@ -88,11 +87,6 @@ const Editor = () => {
         });
     };
 
-    // Reset all
-    const handleReset = async () => {
-        resetDraft();
-    };
-
     // This is used to separate sections in the markdown output
     const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter for now
 
@@ -132,10 +126,7 @@ const Editor = () => {
 
     return (
         <>
-        <Header
-            markdown={markdown}
-            onReset={handleReset}
-        />
+        <Header markdown={markdown} />
         {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
         {showTOC && (
             <DynamicTOC

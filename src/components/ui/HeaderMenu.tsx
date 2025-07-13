@@ -8,10 +8,9 @@ import { writeTextFile } from '@tauri-apps/plugin-fs';
 
 type HeaderMenuProps = {
   markdown: string;
-  onReset: () => void;
 };
 
-const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
+const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
   const saveDraft = useEditorStore((s) => s.saveDraft);
   const saveStatus = useEditorStore((s) => s.saveStatus);
   const resetSaveStatus = useEditorStore((s) => s.resetSaveStatus);
@@ -116,7 +115,6 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown, onReset }) => {
     if (confirmation) {
       resetDraft();
       resetSaveStatus();
-      onReset();
       toaster.create({
         title: 'Editor Reset',
         description: 'Editor draft has been cleared.',
