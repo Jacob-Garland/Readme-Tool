@@ -1,4 +1,4 @@
-import { CheckboxCard, VStack, IconButton } from "@chakra-ui/react";
+import { CheckboxCard, VStack, Heading, IconButton } from "@chakra-ui/react";
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -70,23 +70,28 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
   };
 
   return (
-    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
-        <VStack align="stretch" p={2}>
-          {selectedSections.map((title) => (
-            <DraggableCard
-              key={title}
-              id={title}
-              checked={checkedSections.includes(title)}
-              onToggle={onToggle}
-              draggable={!nonDraggableIds.includes(title)}
-            >
-              {title}
-            </DraggableCard>
-          ))}
-        </VStack>
-      </SortableContext>
-    </DndContext>
+    <>
+      <Heading m={2} textAlign={"center"}>
+        Selections
+      </Heading>
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
+          <VStack align="stretch" p={2}>
+            {selectedSections.map((title) => (
+              <DraggableCard
+                key={title}
+                id={title}
+                checked={checkedSections.includes(title)}
+                onToggle={onToggle}
+                draggable={!nonDraggableIds.includes(title)}
+              >
+                {title}
+              </DraggableCard>
+            ))}
+          </VStack>
+        </SortableContext>
+      </DndContext>
+    </>
   );
 };
 

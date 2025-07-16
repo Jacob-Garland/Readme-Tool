@@ -42,14 +42,14 @@ const markdownComponentTitles = [
   "Link"
 ];
 
-interface SectionsProps {
+interface BuilderMenuProps {
   onSectionClick?: (section: string) => void;
   onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
   onInsertMarkdownComponent?: (section: string) => void;
   selections: string[];
 }
 
-const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
+const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
   // Handler for blank section
   const handleBlankSection = () => {
     if (onSectionClick) {
@@ -128,4 +128,4 @@ const Sections: React.FC<SectionsProps> = ({ onSectionClick, onInsertBadge, onIn
   );
 };
 
-export default Sections;
+export default BuilderMenu;

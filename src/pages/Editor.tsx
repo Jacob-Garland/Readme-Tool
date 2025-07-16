@@ -1,10 +1,10 @@
-import { Tabs, Box, Flex, Heading, HStack } from "@chakra-ui/react";
+import { Tabs, Box, Flex, HStack } from "@chakra-ui/react";
 import { useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
 import MonacoEditorWrapper from "../components/MonacoEditor";
-import Sections from "../components/BuilderMenu";
+import BuilderMenu from "../components/BuilderMenu";
 import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
@@ -198,9 +198,6 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Heading m={4} textAlign={"center"}>
-                                        Selections
-                                    </Heading>
                                     <Selections
                                         selectedSections={sections.map(s => s.id)}
                                         checkedSections={checkedSections}
@@ -245,9 +242,6 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Heading textAlign={"center"}>
-                                        Selections
-                                    </Heading>
                                     <Flex justifyContent="center" mb={4}>
                                         <PreviewSwitch isGitView={isGitView} setIsGitView={handleSetPreview} />
                                     </Flex>
@@ -264,7 +258,7 @@ const Editor = () => {
                 </Tabs.Root>
             </Box>
 
-            <Sections
+            <BuilderMenu
                 onSectionClick={handleAddSection}
                 onInsertBadge={handleInsertBadge}
                 onInsertMarkdownComponent={handleInsertMarkdownComponent}
