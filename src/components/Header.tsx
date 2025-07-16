@@ -12,7 +12,7 @@ const Header: React.FC<HeaderProps> = ({ markdown }) => {
         <Box as="header" w="100%" px={6} py={4} mb={4} boxShadow="lg" boxShadowColor={"black"} position="relative">
             <Flex align="center" justify="space-between" position="relative">
                 {/* Left-side */}
-                <Flex gap={2} minW="220px">
+                <Flex gap={4} minW="220px">
                     <BackButton />
                     <StatusIndicator />
                 </Flex>
@@ -20,12 +20,12 @@ const Header: React.FC<HeaderProps> = ({ markdown }) => {
                 {/* Center heading absolutely centered */}
                 <Box position="absolute" left="50%" top="50%" style={{ transform: 'translate(-50%, -50%)' }} zIndex={1} w="max-content">
                     <Heading size="lg" textAlign="center">
-                        The Ultimate <Code size={"lg"} p={2}>README.md</Code> Tool
+                        The Ultimate <Code size={"lg"} p={2} bg={"yellow.300"} color={"black"}>README.md</Code> Tool
                     </Heading>
                 </Box>
 
                 {/* Right-side */}
-                <Flex gap={2} minW="180px" justify="flex-end">
+                <Flex minW="180px" justify="flex-end">
                     <HeaderMenu markdown={markdown} />
                 </Flex>
             </Flex>

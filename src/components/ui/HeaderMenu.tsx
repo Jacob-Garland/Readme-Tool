@@ -191,7 +191,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
               </Menu.Item>
             </Group>
             <Separator size={"lg"}/>
-            {/* Autosave toggle - use a flex row, not a Menu.Item, to avoid menu close */}
+            {/* Autosave/Color Mode toggles - avoid menu close */}
             <Box px={2} py={2} display="flex" alignItems="center" userSelect="none"
               onPointerDownCapture={e => e.stopPropagation()}>
               <Switch.Root

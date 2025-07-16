@@ -14,7 +14,7 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => (
     onClick={onClick}
     mb={2}
   >
-    Title
+    Add Title
   </Button>
 );
 

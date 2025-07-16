@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
 import MonacoEditorWrapper from "../components/MonacoEditor";
-import Sections from "../components/Sections";
+import Sections from "../components/BuilderMenu";
 import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
