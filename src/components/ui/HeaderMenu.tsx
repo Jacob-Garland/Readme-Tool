@@ -5,6 +5,7 @@ import { useAppStore } from '../../stores/appStore';
 import { useEditorStore } from '../../stores/editorStore';
 import { save, confirm } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
+import { ColorModeSwitch } from "./color-mode";
 
 type HeaderMenuProps = {
   markdown: string;
@@ -166,7 +167,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
             <Group grow gap="0" p={2}>
               <Menu.Item
                 value="copy"
-                width="14"
+                width="16"
                 gap="1"
                 flexDirection="column"
                 justifyContent="center"
@@ -178,7 +179,8 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
               {/* Manual Save button for draft in editor */}
               <Menu.Item
                 value="save"
-                width="14"
+                width="16"
+                ml={2}
                 gap="1"
                 flexDirection="column"
                 justifyContent="center"
@@ -190,7 +192,7 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
             </Group>
             <Separator size={"lg"}/>
             {/* Autosave toggle - use a flex row, not a Menu.Item, to avoid menu close */}
-            <Box px={3} py={2} display="flex" alignItems="center" gap={3} userSelect="none"
+            <Box px={2} py={2} display="flex" alignItems="center" userSelect="none"
               onPointerDownCapture={e => e.stopPropagation()}>
               <Switch.Root
                 size="lg"
@@ -198,13 +200,19 @@ const HeaderMenu: React.FC<HeaderMenuProps> = ({ markdown }) => {
                 onCheckedChange={(details) => toggleAutoSave(details.checked)}
               >
                 <Switch.HiddenInput />
-                <Switch.Label>Autosave</Switch.Label>
+                <Switch.Label mr={4}>Autosave</Switch.Label>
                 <Switch.Control>
                   <Switch.Thumb>
-                    <Switch.ThumbIndicator fallback={<X color="black" />}>{autoSaveEnabled ? <Check /> : <X color="black" />}</Switch.ThumbIndicator>
+                    <Switch.ThumbIndicator fallback={<X color="black" />}>
+                      {autoSaveEnabled ? <Check /> : <X color="black" />}
+                    </Switch.ThumbIndicator>
                   </Switch.Thumb>
                 </Switch.Control>
               </Switch.Root>
+            </Box>
+            <Box px={2} py={2} display="flex" alignItems="center" userSelect="none"
+              onPointerDownCapture={e => e.stopPropagation()}>
+              <ColorModeSwitch />
             </Box>
             <Menu.Item
               value="export"

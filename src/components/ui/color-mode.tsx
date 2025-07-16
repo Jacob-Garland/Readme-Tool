@@ -46,6 +46,7 @@ export const ColorModeSwitch = React.forwardRef<
   return (
     <Switch.Root colorPalette="purple" size="lg" checked={colorMode === "dark"}>
       <Switch.HiddenInput />
+      <Switch.Label>Color Mode</Switch.Label>
       <Switch.Control onClick={toggleColorMode} ref={ref} {...props}>
         <Switch.Thumb />
         <Switch.Indicator fallback={<Icon as={Moon} color="gray.600" />}>

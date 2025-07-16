@@ -2,7 +2,6 @@ import { Box, Flex, Heading, Code } from '@chakra-ui/react';
 import BackButton from './ui/BackButton';
 import HeaderMenu from './ui/HeaderMenu';
 import StatusIndicator from './ui/StatusIndicator';
-import { ColorModeSwitch } from './ui/color-mode';
 
 interface HeaderProps {
   markdown: string;
@@ -27,7 +26,6 @@ const Header: React.FC<HeaderProps> = ({ markdown }) => {
 
                 {/* Right-side */}
                 <Flex gap={2} minW="180px" justify="flex-end">
-                    <ColorModeSwitch />
                     <HeaderMenu markdown={markdown} />
                 </Flex>
             </Flex>
