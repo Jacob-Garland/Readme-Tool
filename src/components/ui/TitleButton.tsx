@@ -1,5 +1,6 @@
 import React from "react";
-import { Button } from "@chakra-ui/react";
+import { Button, Icon } from "@chakra-ui/react";
+import { DiamondPlus } from "lucide-react";
 
 interface TitleButtonProps {
   onClick: () => void;
@@ -12,9 +13,9 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => (
     w="80%"
     fontSize={"md"}
     onClick={onClick}
-    mb={2}
   >
-    Add Title
+    <Icon as={DiamondPlus} />
+    Title
   </Button>
 );
 

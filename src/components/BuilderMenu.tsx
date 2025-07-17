@@ -1,7 +1,7 @@
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button, VStack, Icon, Box, Heading, Field, Portal, Select, createListCollection, Separator } from "@chakra-ui/react";
+import { Button, VStack, HStack, Icon, Box, Heading, Field, Portal, Select, createListCollection } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 import BadgeForm from "./BadgeForm";
 import TitleButton from "./ui/TitleButton";
@@ -90,30 +90,28 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
         flexDirection="column"
         overflow="hidden" 
         p={4} 
-        bg={"purple.100"} 
+        bg={{ _light: "purple.100" , _dark: "purple.900" }} 
         overflowY={"auto"}
     >
         <Heading size="xl" textAlign="center" mt={2}>
             Builder Menu
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
-
-              <BadgeForm onInsert={onInsertBadge} selections={selections} />
-              <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"} mb={2}>
-                  <Icon as={DiamondPlus} mr={1} /> Blank Section
-              </Button>
               <TitleButton onClick={() => {
                 if (onSectionClick) {
                   onSectionClick('Title');
                 }
               }} />
+              <BadgeForm onInsert={onInsertBadge} selections={selections} />
+              <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"} mb={2}>
+                  <Icon as={DiamondPlus} mr={1} /> Blank Section
+              </Button>
 
-              {/* <Heading size="lg" textAlign="center">
+              <Heading size="lg" textAlign="center">
                 Pre-Built Sections
-              </Heading> */}
-
+              </Heading>
               <form onSubmit={onSubmit}>
-                <VStack gap={2} alignItems="center">
+                <HStack gap={2} alignItems="center">
                   <Field.Root invalid={!!errors.section} w={"80%"}>
                     <Field.Label>Pre-Built Sections</Field.Label>
                     <Controller
@@ -127,6 +125,8 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                           onValueChange={({value}) => field.onChange(value)}
                           onInteractOutside={() => field.onBlur()}
                           multiple
+                          variant={"subtle"}
+                          w={"60"}
                         >
                           <Select.HiddenSelect />
                           <Select.Control>
@@ -139,63 +139,33 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                             </Select.IndicatorGroup>
                           </Select.Control>
                           <Portal>
-                            <Select.Content>
-                              {sectionTitles.items.map((section) => (
-                                <Select.Item item={section} key={section.value}>
-                                  {section.label}
-                                  <Select.ItemIndicator />
-                                </Select.Item>
-                              ))}
-                            </Select.Content>
+                            <Select.Positioner>
+                              <Select.Content>
+                                {sectionTitles.items.map((section) => (
+                                  <Select.Item item={section} key={section.value}>
+                                    {section.label}
+                                    <Select.ItemIndicator />
+                                  </Select.Item>
+                                ))}
+                              </Select.Content>
+                            </Select.Positioner>
                           </Portal>
                         </Select.Root>
                       )}
                     />
                     <Field.ErrorText>{errors.section?.message}</Field.ErrorText>
                   </Field.Root>
-                  <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
-                    <Icon as={DiamondPlus} mr={1} /> Add
+                  <Button type="submit" variant={"solid"} color={"purple.500"} fontSize={"md"} mt={6} w={"24%"}>
+                    <Icon as={DiamondPlus} /> Add
                   </Button>
-                </VStack>
+                </HStack>
               </form>
 
-              {/* Old buttons on menu */}
-              {/* {sectionTitles.filter(section => section !== 'Title').map((section) => (
-                  <Button
-                    key={section}
-                    colorPalette="purple"
-                    w="80%"
-                    onClick={onSectionClick ? () => onSectionClick(section) : undefined}
-                    fontSize={"md"}
-                  >
-                    {section}
-                  </Button>
-              ))} */}
-
-              <Separator />
-              
-              {/* Old menu buttons */}
-              {/* <Heading size="lg" textAlign="center" mt={4}>
+              <Heading size="lg" textAlign="center" mt={4}>
                 Markdown Components
-              </Heading> */}
-              {/* {markdownComponentTitles.map((section) => (
-                  <Button
-                    key={section}
-                    colorPalette="purple"
-                    w="80%"
-                    onClick={() => {
-                      if (onInsertMarkdownComponent) {
-                        onInsertMarkdownComponent(section);
-                      }
-                    }}
-                    fontSize={"md"}
-                  >
-                    {section}
-                  </Button>
-              ))} */}
-
+              </Heading>
               <form onSubmit={onSubmit}>
-                <VStack gap={2} alignItems="center">
+                <HStack gap={2} alignItems="center">
                   <Field.Root invalid={!!errors.markdownComponent} w={"80%"}>
                     <Field.Label>Markdown Components</Field.Label>
                     <Controller
@@ -208,6 +178,8 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                           collection={markdownComponentTitles}
                           onValueChange={({value}) => field.onChange(value)}
                           onInteractOutside={() => field.onBlur()}
+                          variant={"subtle"}
+                          w={"60"}
                         >
                           <Select.HiddenSelect />
                           <Select.Control>
@@ -220,24 +192,26 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                             </Select.IndicatorGroup>
                           </Select.Control>
                           <Portal>
-                            <Select.Content>
-                              {markdownComponentTitles.items.map((component) => (
-                                <Select.Item item={component} key={component.value}>
-                                  {component.label}
-                                  <Select.ItemIndicator />
+                            <Select.Positioner>
+                              <Select.Content>
+                                {markdownComponentTitles.items.map((component) => (
+                                  <Select.Item item={component} key={component.value}>
+                                    {component.label}
+                                    <Select.ItemIndicator />
                                 </Select.Item>
                               ))}
-                            </Select.Content>
+                              </Select.Content>
+                            </Select.Positioner>
                           </Portal>
                         </Select.Root>
                       )}
                     />
                     <Field.ErrorText>{errors.markdownComponent?.message}</Field.ErrorText>
                   </Field.Root>
-                  <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
-                    <Icon as={DiamondPlus} mr={1} /> Add
+                  <Button type="submit" variant={"solid"} color={"purple.500"} fontSize={"md"} mt={6} w={"24%"}>
+                    <Icon as={DiamondPlus} /> Add
                   </Button>
-                </VStack>
+                </HStack>
               </form>
 
             </VStack>

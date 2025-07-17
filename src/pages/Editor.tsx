@@ -194,7 +194,7 @@ const Editor = () => {
                                     minH="300px"
                                     overflowY="auto"
                                     borderRadius="md"
-                                    bg={"purple.100"}
+                                    bg={{ _light: "purple.100" , _dark: "purple.900" }}
                                     p={4}
                                     boxShadow="md"
                                 >
@@ -238,7 +238,7 @@ const Editor = () => {
                                     minH="300px"
                                     overflowY="auto"
                                     borderRadius="md"
-                                    bg={"purple.100"}
+                                    bg={{ _light: "purple.100" , _dark: "purple.900" }}
                                     p={4}
                                     boxShadow="md"
                                 >
