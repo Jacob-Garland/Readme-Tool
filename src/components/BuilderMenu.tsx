@@ -54,8 +54,8 @@ interface BuilderMenuProps {
   selections: string[];
 }
 const formSchema = z.object({
-  section: z.string().min(1, "Section is required"),
-  markdownComponent: z.string().min(1, "Component is required"),
+  section: z.array(z.string()).min(1, "Section is required"),
+  markdownComponent: z.string({ message: "Component is required" }).array(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -64,11 +64,11 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
   const { handleSubmit, formState: { errors }, control } = useForm<FormValues>();
 
   const onSubmit = handleSubmit((data) => {
-    if (onInsertMarkdownComponent) {
-      onInsertMarkdownComponent(data.markdownComponent);
+    if (onInsertMarkdownComponent && Array.isArray(data.markdownComponent)) {
+      data.markdownComponent.forEach((component) => onInsertMarkdownComponent(component));
     }
     if (onSectionClick) {
-      onSectionClick(data.section);
+      data.section.forEach((section) => onSectionClick(section));
     }
   });
 
@@ -154,7 +154,7 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                     <Field.ErrorText>{errors.section?.message}</Field.ErrorText>
                   </Field.Root>
                   <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
-                    <Icon as={DiamondPlus} mr={1} /> Add Section
+                    <Icon as={DiamondPlus} mr={1} /> Add
                   </Button>
                 </VStack>
               </form>
@@ -235,7 +235,7 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                     <Field.ErrorText>{errors.markdownComponent?.message}</Field.ErrorText>
                   </Field.Root>
                   <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
-                    <Icon as={DiamondPlus} mr={1} /> Add Component
+                    <Icon as={DiamondPlus} mr={1} /> Add
                   </Button>
                 </VStack>
               </form>
