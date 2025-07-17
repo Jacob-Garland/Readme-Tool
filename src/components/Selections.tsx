@@ -72,7 +72,7 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
   return (
     <>
       <Heading m={2} textAlign={"center"}>
-        Selections
+        Table Of Contents
       </Heading>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
