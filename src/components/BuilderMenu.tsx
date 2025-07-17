@@ -1,46 +1,51 @@
 import React from "react";
-import { Button, VStack, Icon, Box, Heading, Text } from "@chakra-ui/react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button, VStack, Icon, Box, Heading, Field, Portal, Select, createListCollection, Separator } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 import BadgeForm from "./BadgeForm";
 import TitleButton from "./ui/TitleButton";
 
 // Pre-Built Sections
-const sectionTitles = [
-  "Title",
-  "Table of Contents",
-  "Introduction",
-  "Installation",
-  "Usage",
-  "Contributing",
-  "Tech Stack",
-  "Credits",
-  "Features",
-  "Deployment",
-  "Run Locally",
-  "Environment Variables",
-  "Requirements",
-  "FAQ",
-  "Badges",
-  "License"
-];
+const sectionTitles = createListCollection({
+  items: [
+     { label: "Table of Contents", value: "Table of Contents" },
+     { label: "Introduction", value: "Introduction" },
+     { label: "Installation", value: "Installation" },
+     { label: "Usage", value: "Usage" },
+     { label: "Contributing", value: "Contributing" },
+     { label: "Tech Stack", value: "Tech Stack" },
+     { label: "Credits", value: "Credits" },
+     { label: "Features", value: "Features" },
+     { label: "Deployment", value: "Deployment" },
+     { label: "Run Locally", value: "Run Locally" },
+     { label: "Environment Variables", value: "Environment Variables" },
+     { label: "Requirements", value: "Requirements" },
+     { label: "FAQ", value: "FAQ" },
+     { label: "Badges", value: "Badges" },
+     { label: "License", value: "License" }
+    ],
+});
 
 // Markdown Components
-const markdownComponentTitles = [
-  "Logo",
-  "Image",
-  "Video",
-  "Youtube Video",
-  "Heading 1",
-  "Heading 2",
-  "Heading 3",
-  "Bold Text",
-  "Italicized Text",
-  "Blockquote",
-  "Ordered List",
-  "Unordered List",
-  "Code",
-  "Link"
-];
+const markdownComponentTitles = createListCollection({
+  items: [
+    { label: "Heading 1", value: "Heading 1" },
+    { label: "Heading 2", value: "Heading 2" },
+    { label: "Heading 3", value: "Heading 3" },
+    { label: "Bold Text", value: "Bold Text" },
+    { label: "Italicized Text", value: "Italicized Text" },
+    { label: "Blockquote", value: "Blockquote" },
+    { label: "Ordered List", value: "Ordered List" },
+    { label: "Unordered List", value: "Unordered List" },
+    { label: "Code", value: "Code" },
+    { label: "Link", value: "Link" },
+    { label: "Logo", value: "Logo" },
+    { label: "Image", value: "Image" },
+    { label: "Video", value: "Video" },
+    { label: "Youtube Video", value: "Youtube Video" },
+  ],
+});
 
 interface BuilderMenuProps {
   onSectionClick?: (section: string) => void;
@@ -48,8 +53,25 @@ interface BuilderMenuProps {
   onInsertMarkdownComponent?: (section: string) => void;
   selections: string[];
 }
+const formSchema = z.object({
+  section: z.string().min(1, "Section is required"),
+  markdownComponent: z.string().min(1, "Component is required"),
+});
+
+type FormValues = z.infer<typeof formSchema>;
 
 const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
+  const { handleSubmit, formState: { errors }, control } = useForm<FormValues>();
+
+  const onSubmit = handleSubmit((data) => {
+    if (onInsertMarkdownComponent) {
+      onInsertMarkdownComponent(data.markdownComponent);
+    }
+    if (onSectionClick) {
+      onSectionClick(data.section);
+    }
+  });
+
   // Handler for blank section
   const handleBlankSection = () => {
     if (onSectionClick) {
@@ -74,10 +96,6 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
         <Heading size="xl" textAlign="center" mt={2}>
             Builder Menu
         </Heading>
-        <Box textAlign="center" fontSize="sm">
-            <Text>Click on a button to add it to your README.md</Text>
-        </Box>
-        
             <VStack gap={2} p={4} alignItems="center">
 
               <BadgeForm onInsert={onInsertBadge} selections={selections} />
@@ -90,10 +108,59 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                 }
               }} />
 
-              <Heading size="lg" textAlign="center">
+              {/* <Heading size="lg" textAlign="center">
                 Pre-Built Sections
-              </Heading>
-              {sectionTitles.filter(section => section !== 'Title').map((section) => (
+              </Heading> */}
+
+              <form onSubmit={onSubmit}>
+                <VStack gap={2} alignItems="center">
+                  <Field.Root invalid={!!errors.section} w={"80%"}>
+                    <Field.Label>Pre-Built Sections</Field.Label>
+                    <Controller
+                      name="section"
+                      control={control}
+                      render={({ field }) => (
+                        <Select.Root
+                          name={field.name}
+                          value={field.value}
+                          collection={sectionTitles}
+                          onValueChange={({value}) => field.onChange(value)}
+                          onInteractOutside={() => field.onBlur()}
+                          multiple
+                        >
+                          <Select.HiddenSelect />
+                          <Select.Control>
+                            <Select.Trigger>
+                              <Select.ValueText placeholder="Select a section" />
+                            </Select.Trigger>
+                            <Select.IndicatorGroup>
+                              <Select.ClearTrigger />
+                              <Select.Indicator />
+                            </Select.IndicatorGroup>
+                          </Select.Control>
+                          <Portal>
+                            <Select.Content>
+                              {sectionTitles.items.map((section) => (
+                                <Select.Item item={section} key={section.value}>
+                                  {section.label}
+                                  <Select.ItemIndicator />
+                                </Select.Item>
+                              ))}
+                            </Select.Content>
+                          </Portal>
+                        </Select.Root>
+                      )}
+                    />
+                    <Field.ErrorText>{errors.section?.message}</Field.ErrorText>
+                  </Field.Root>
+                  <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
+                    <Icon as={DiamondPlus} mr={1} /> Add Section
+                  </Button>
+                </VStack>
+              </form>
+
+              {/* Old buttons on menu */}
+              {/* {sectionTitles.filter(section => section !== 'Title').map((section) => (
                   <Button
                     key={section}
                     colorPalette="purple"
@@ -103,12 +170,15 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                   >
                     {section}
                   </Button>
-              ))}
+              ))} */}
 
-              <Heading size="lg" textAlign="center" mt={4}>
+              <Separator />
+              
+              {/* Old menu buttons */}
+              {/* <Heading size="lg" textAlign="center" mt={4}>
                 Markdown Components
-              </Heading>
-              {markdownComponentTitles.map((section) => (
+              </Heading> */}
+              {/* {markdownComponentTitles.map((section) => (
                   <Button
                     key={section}
                     colorPalette="purple"
@@ -122,7 +192,54 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                   >
                     {section}
                   </Button>
-              ))}
+              ))} */}
+
+              <form onSubmit={onSubmit}>
+                <VStack gap={2} alignItems="center">
+                  <Field.Root invalid={!!errors.markdownComponent} w={"80%"}>
+                    <Field.Label>Markdown Components</Field.Label>
+                    <Controller
+                      name="markdownComponent"
+                      control={control}
+                      render={({ field }) => (
+                        <Select.Root
+                          name={field.name}
+                          value={field.value}
+                          collection={markdownComponentTitles}
+                          onValueChange={({value}) => field.onChange(value)}
+                          onInteractOutside={() => field.onBlur()}
+                        >
+                          <Select.HiddenSelect />
+                          <Select.Control>
+                            <Select.Trigger>
+                              <Select.ValueText placeholder="Select a component" />
+                            </Select.Trigger>
+                            <Select.IndicatorGroup>
+                              <Select.ClearTrigger />
+                              <Select.Indicator />
+                            </Select.IndicatorGroup>
+                          </Select.Control>
+                          <Portal>
+                            <Select.Content>
+                              {markdownComponentTitles.items.map((component) => (
+                                <Select.Item item={component} key={component.value}>
+                                  {component.label}
+                                  <Select.ItemIndicator />
+                                </Select.Item>
+                              ))}
+                            </Select.Content>
+                          </Portal>
+                        </Select.Root>
+                      )}
+                    />
+                    <Field.ErrorText>{errors.markdownComponent?.message}</Field.ErrorText>
+                  </Field.Root>
+                  <Button type="submit" variant={"solid"} color={"purple.500"} w="80%" fontSize={"md"}>
+                    <Icon as={DiamondPlus} mr={1} /> Add Component
+                  </Button>
+                </VStack>
+              </form>
+
             </VStack>
     </Box>
   );
