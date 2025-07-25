@@ -93,9 +93,11 @@ const Editor = () => {
         let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
         // Only prepend title as H1 if it is checked
         if (title && title.trim() && checkedSections.includes(title)) {
-            newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
+            // Always ensure two blank lines after the title
+            newMarkdown = `# ${title.trim()}\n\n\n` + newMarkdown.replace(/^\n+/, "");
         }
-        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && checkedSections.includes(title)) ? `# ${title.trim()}\n\n` : "");
+        // Remove duplicate H1s at the top (if user manually edits)
+        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && checkedSections.includes(title)) ? `# ${title.trim()}\n\n\n` : "");
         setDraft({ ...draft, markdown: newMarkdown });
     }, [sections, checkedSections, title]);
 
