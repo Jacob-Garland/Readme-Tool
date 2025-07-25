@@ -50,18 +50,11 @@ const Editor = () => {
         setSettings({ ...settings, preview: next });
     };
 
-    // Add section by id (only adds to checkedSections, not sections array)
+    // Handler to add a section from BuilderMenu
     const handleAddSection = (sectionId: string) => {
-        // If not already in checkedSections, add it
-        if (!checkedSections.includes(sectionId)) {
-            setDraft({ ...draft, selections: [...checkedSections, sectionId] });
-        }
-        // If not already in sections, add from template
-        if (!sections.find(s => s.id === sectionId)) {
-            const template = templates.find(t => t.id === sectionId);
-            if (template) {
-                addDraftSection({ ...template });
-            }
+        const template = templates.find(t => t.id === sectionId);
+        if (template) {
+            addDraftSection({ ...template });
         }
     };
 
@@ -93,12 +86,12 @@ const Editor = () => {
         // Only include sections that are checked, in the current order of checkedSections
         const checked = sections.filter(s => checkedSections.includes(s.id));
         let newMarkdown = checked.map(s => s.content).join(SECTION_DELIMITER);
-        // Prepend title as H1 if present
-        if (title && title.trim()) {
+        // Only prepend title as H1 if it is checked
+        if (title && title.trim() && checkedSections.includes(title)) {
             newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
         }
         // Remove duplicate H1s at the top (if user manually edits)
-        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, title && title.trim() ? `# ${title.trim()}\n\n` : "");
+        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && checkedSections.includes(title)) ? `# ${title.trim()}\n\n` : "");
         setDraft({ ...draft, markdown: newMarkdown });
     }, [sections, checkedSections, title]);
 
@@ -188,11 +181,22 @@ const Editor = () => {
                                         // Remove all H1s at the top for section splitting
                                         const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
                                         const newContents = cleanedMarkdown.split(SECTION_DELIMITER);
-                                        const updatedSections = sections.map((section, idx) => ({
-                                            ...section,
-                                            content: newContents[idx] !== undefined ? newContents[idx] : ""
-                                        }));
-                                        setDraft({ ...draft, sections: updatedSections, title: newTitle });
+                                        const updatedSections = sections.map((section, idx) => {
+                                            const content = newContents[idx] !== undefined ? newContents[idx] : "";
+                                            // Extract first H2 as section title
+                                            const h2Match = content.match(/^##\s+(.+)$/m);
+                                            return {
+                                                ...section,
+                                                content,
+                                                title: h2Match ? h2Match[1].trim() : section.title,
+                                            };
+                                        });
+                                        // Always keep the title in selections, replacing the old one if needed
+                                        let selections = draft.selections.filter(t => t !== draft.title);
+                                        if (newTitle && !selections.includes(newTitle)) {
+                                          selections = [newTitle, ...selections];
+                                        }
+                                        setDraft({ ...draft, sections: updatedSections, title: newTitle, selections });
                                     }}
                                     height="77vh"
                                     width="75%"
@@ -274,7 +278,12 @@ const Editor = () => {
             <BuilderMenu
                 onSectionClick={handleAddSection}
                 onTitleClick={(newTitle) => {
-                  setDraft({ ...draft, title: newTitle });
+                  // Always keep the title in selections, replacing the old one if needed
+                  let selections = draft.selections.filter(t => t !== draft.title);
+                  if (newTitle && !selections.includes(newTitle)) {
+                    selections = [newTitle, ...selections];
+                  }
+                  setDraft({ ...draft, title: newTitle, selections });
                 }}
                 onInsertBadge={handleInsertBadge}
                 onInsertMarkdownComponent={handleInsertMarkdownComponent}

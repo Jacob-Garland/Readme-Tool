@@ -67,8 +67,11 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
     <DraggableCard
       key="__title__"
       id="__title__"
-      checked={true}
-      onToggle={() => {}}
+      checked={checkedSections.includes(title)}
+      onToggle={() => {
+        const isChecked = checkedSections.includes(title);
+        onToggle(title, !isChecked);
+      }}
       draggable={false}
     >
       {title}
