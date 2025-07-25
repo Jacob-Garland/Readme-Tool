@@ -2,18 +2,18 @@ import React, { useRef, useState } from "react";
 import { Button, Icon, Popover, Portal, Stack, Input, Box } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 
-interface TitleButtonProps {
-  onClick: (title: string) => void;
+interface SectionButtonProps {
+  onAddSection: (sectionTitle: string) => void;
 }
 
-const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
+const SectionButton: React.FC<SectionButtonProps> = ({ onAddSection }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = () => {
     if (inputValue.trim()) {
-      onClick(inputValue.trim());
+      onAddSection(inputValue.trim());
       setInputValue("");
       setIsOpen(false);
     }
@@ -30,7 +30,7 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
           onClick={() => setIsOpen(true)}
         >
           <Icon as={DiamondPlus} />
-          Title
+          New Section
         </Button>
       </Popover.Trigger>
       <Portal>
@@ -39,10 +39,10 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
             <Popover.Arrow />
             <Popover.Body>
               <Stack gap="4">
-                <Box fontWeight="bold">Project or Markdown Title</Box>
+                <Box fontWeight="bold">Section Title</Box>
                 <Input
                   ref={inputRef}
-                  placeholder="Enter project title"
+                  placeholder="Enter section title"
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
                   onKeyDown={e => {
@@ -51,7 +51,7 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
                   autoFocus
                 />
                 <Button colorPalette="purple" onClick={handleAdd} disabled={!inputValue.trim()}>
-                  Add Title
+                  Add Section
                 </Button>
               </Stack>
             </Popover.Body>
@@ -63,4 +63,4 @@ const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
   );
 };
 
-export default TitleButton;
+export default SectionButton;

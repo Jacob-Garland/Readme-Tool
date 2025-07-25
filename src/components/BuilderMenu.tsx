@@ -3,6 +3,8 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button, VStack, HStack, Icon, Box, Heading, Field, Portal, Select, createListCollection } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
+import SectionButton from "./ui/SectionButton";
+import { useEditorStore } from "../stores/editorStore";
 import BadgeForm from "./ui/BadgeForm";
 import TitleButton from "./ui/TitleButton";
 
@@ -72,13 +74,6 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
       data.section.forEach((section) => onSectionClick(section));
     }
   });
-
-  // Handler for blank section
-  const handleBlankSection = () => {
-    if (onSectionClick) {
-      onSectionClick('Blank Section');
-    }
-  };
   
   return (
     <Box w={["100%", "100%", "20%"]}
@@ -104,9 +99,20 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
                 }
               }} />
               <BadgeForm onInsert={onInsertBadge} selections={selections} />
-              <Button variant={"solid"} color={"purple.500"} w="80%" onClick={handleBlankSection} fontSize={"md"} mb={2}>
-                  <Icon as={DiamondPlus} mr={1} /> Blank Section
-              </Button>
+
+              <SectionButton
+                onAddSection={(sectionTitle) => {
+                  const addDraftSection = useEditorStore.getState().addDraftSection;
+                  // Generate a unique id for the section (could use title or a uuid)
+                  const id = sectionTitle;
+                  const newSection = {
+                    id,
+                    title: sectionTitle,
+                    content: `## ${sectionTitle}\n\nType your section here`
+                  };
+                  addDraftSection(newSection);
+                }}
+              />
 
               <Heading size="lg" textAlign="center">
                 Pre-Built Sections

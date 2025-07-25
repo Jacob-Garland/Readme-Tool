@@ -62,12 +62,27 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             if (debounceTimer) clearTimeout(debounceTimer);
             clearAutosave();
         },
-        addDraftSection: (section) => set((state) => ({
-            draft: {
-                ...state.draft,
-                sections: [...state.draft.sections, section],
-            },
-        })),
+        addDraftSection: (section) => set((state) => {
+            // Add section to sections and selections
+            const newSections = [...state.draft.sections, section];
+            const newSelections = [...state.draft.selections, section.id];
+            // Rebuild markdown
+            const title = state.draft.title || "";
+            const SECTION_DELIMITER = "\u2063";
+            let newMarkdown = newSections.filter(s => newSelections.includes(s.id)).map(s => s.content).join(SECTION_DELIMITER);
+            if (title && title.trim()) {
+                newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
+            }
+            newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, title && title.trim() ? `# ${title.trim()}\n\n` : "");
+            return {
+                draft: {
+                    ...state.draft,
+                    sections: newSections,
+                    selections: newSelections,
+                    markdown: newMarkdown,
+                },
+            };
+        }),
         saveStatus: "idle",
         resetSaveStatus: () => set({ saveStatus: "idle", lastSaved: null, error: null }),
         lastSaved: null,

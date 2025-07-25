@@ -78,15 +78,10 @@ const Editor = () => {
 
     // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
-        // Prevent Title from being reordered
-        let order = newOrder;
-        if (checkedSections[0] === 'Title' && newOrder[0] !== 'Title') {
-            order = ['Title', ...newOrder.filter(id => id !== 'Title')];
-        }
         setDraft({
             ...draft,
-            selections: order.filter(id => checkedSections.includes(id)),
-            sections: order.map(id => sections.find(s => s.id === id)).filter(Boolean) as Section[],
+            selections: newOrder.filter(id => checkedSections.includes(id)),
+            sections: newOrder.map(id => sections.find(s => s.id === id)).filter(Boolean) as Section[],
         });
     };
 
@@ -218,6 +213,7 @@ const Editor = () => {
                                         onToggle={handleToggleSection}
                                         onReorder={handleReorderSections}
                                         title={draft.title}
+                                        sections={sections}
                                     />
                                 </Box>
                             </HStack>
@@ -266,6 +262,7 @@ const Editor = () => {
                                         onToggle={handleToggleSection}
                                         onReorder={handleReorderSections}
                                         title={draft.title}
+                                        sections={sections}
                                     />
                                 </Box>
                             </HStack>

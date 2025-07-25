@@ -5,6 +5,7 @@ import { GripVertical } from 'lucide-react';
 import { CSS } from '@dnd-kit/utilities';
 import React from "react";
 
+import type { Section } from "../types/types";
 interface SelectionsProps {
   selectedSections: string[];
   checkedSections: string[];
@@ -12,6 +13,7 @@ interface SelectionsProps {
   onReorder: (newOrder: string[]) => void;
   nonDraggableIds?: string[];
   title?: string;
+  sections: Section[];
 }
 
 function DraggableCard({ id, checked, onToggle, children, draggable }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode; draggable?: boolean }) {
@@ -57,7 +59,7 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
   );
 }
 
-const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [], title }) => {
+const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [], title, sections }) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
   // The title card is always at the top and not draggable
@@ -98,17 +100,22 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
             {selectedSections
               // Filter out the title if it matches the title prop (avoid duplicate card)
               .filter(sectionId => !(title && title.trim() && sectionId === title.trim()))
-              .map((sectionId) => (
-                <DraggableCard
-                  key={sectionId}
-                  id={sectionId}
-                  checked={checkedSections.includes(sectionId)}
-                  onToggle={onToggle}
-                  draggable={!nonDraggableIds.includes(sectionId)}
-                >
-                  {sectionId}
-                </DraggableCard>
-              ))}
+              .map((sectionId) => {
+                // Find the section object to get the current title
+                const section = sections.find((s) => s.id === sectionId);
+                const sectionTitle = section ? section.title : sectionId;
+                return (
+                  <DraggableCard
+                    key={sectionId}
+                    id={sectionId}
+                    checked={checkedSections.includes(sectionId)}
+                    onToggle={onToggle}
+                    draggable={!nonDraggableIds.includes(sectionId)}
+                  >
+                    {sectionTitle}
+                  </DraggableCard>
+                );
+              })}
           </VStack>
         </SortableContext>
       </DndContext>
