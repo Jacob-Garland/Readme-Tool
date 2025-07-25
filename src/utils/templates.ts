@@ -5,11 +5,6 @@ export const templates = [
     content: `## New Custom Section\n\nType or add your section here.\n\n`
   },
   {
-    id: "Title",
-    title: "Project Title",
-    content: `# Project Title\n\n`
-  },
-  {
     id: "Logo",
     title: "Logo",
     content: `![Logo](paste-your-image-url-here)\n`

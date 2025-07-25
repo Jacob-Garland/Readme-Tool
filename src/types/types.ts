@@ -8,6 +8,7 @@ export type Draft = {
   sections: Section[];
   selections: string[];
   markdown: string;
+  title?: string;
 };
 
 export type AppSettings = {

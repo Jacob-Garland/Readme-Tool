@@ -17,6 +17,7 @@ const Editor = () => {
     const sections = useEditorStore((s) => s.draft.sections);
     const checkedSections = useEditorStore((s) => s.draft.selections);
     const markdown = useEditorStore((s) => s.draft.markdown);
+    const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
     // Provide default settings: Git-View
@@ -27,7 +28,8 @@ const Editor = () => {
     const draft: Draft = {
         sections,
         selections: checkedSections,
-        markdown
+        markdown,
+        title,
     };
 
     // Helper to update the TOC section content dynamically
@@ -94,8 +96,13 @@ const Editor = () => {
     useEffect(() => {
         // Only include sections that are checked, in the current order of checkedSections
         const checked = sections.filter(s => checkedSections.includes(s.id));
-        setDraft({ ...draft, markdown: checked.map(s => s.content).join(SECTION_DELIMITER) });
-    }, [sections, checkedSections]);
+        let newMarkdown = checked.map(s => s.content).join(SECTION_DELIMITER);
+        // Prepend title as H1 if present
+        if (title && title.trim()) {
+            newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
+        }
+        setDraft({ ...draft, markdown: newMarkdown });
+    }, [sections, checkedSections, title]);
 
     // --- Dynamic TOC logic ---
     // Only render and update TOC if "Table of Contents" is in checkedSections
@@ -260,11 +267,8 @@ const Editor = () => {
 
             <BuilderMenu
                 onSectionClick={handleAddSection}
-                onTitleClick={(title) => {
-                  // Remove any existing H1 at the top, then add the new one
-                  let newMarkdown = markdown.replace(/^# .+\n+/, "");
-                  newMarkdown = `# ${title}\n\n` + newMarkdown;
-                  setDraft({ ...draft, markdown: newMarkdown });
+                onTitleClick={(newTitle) => {
+                  setDraft({ ...draft, title: newTitle });
                 }}
                 onInsertBadge={handleInsertBadge}
                 onInsertMarkdownComponent={handleInsertMarkdownComponent}
