@@ -71,26 +71,30 @@ const Editor = () => {
 
     // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
+        let newSelections = newOrder.filter(id => checkedSections.includes(id));
+        // If the title was checked before, ensure it stays checked and at the front
+        if (title && checkedSections.includes(title) && !newSelections.includes(title)) {
+            newSelections = [title, ...newSelections];
+        } else if (title && checkedSections.includes(title) && newSelections[0] !== title) {
+            newSelections = [title, ...newSelections.filter(id => id !== title)];
+        }
         setDraft({
             ...draft,
-            selections: newOrder.filter(id => checkedSections.includes(id)),
+            selections: newSelections,
             sections: newOrder.map(id => sections.find(s => s.id === id)).filter(Boolean) as Section[],
         });
     };
-
-    // This is used to separate sections in the markdown output
-    const SECTION_DELIMITER = "\u2063"; // Using a Unicode character as a delimiter for now
 
     // Update markdown when checkedSections or sections change
     useEffect(() => {
         // Only include sections that are checked, in the current order of checkedSections
         const checked = sections.filter(s => checkedSections.includes(s.id));
-        let newMarkdown = checked.map(s => s.content).join(SECTION_DELIMITER);
+        const cleanSection = (s: string) => s.replace(/^\n+|\n+$/g, "").trim();
+        let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
         // Only prepend title as H1 if it is checked
         if (title && title.trim() && checkedSections.includes(title)) {
             newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
         }
-        // Remove duplicate H1s at the top (if user manually edits)
         newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && checkedSections.includes(title)) ? `# ${title.trim()}\n\n` : "");
         setDraft({ ...draft, markdown: newMarkdown });
     }, [sections, checkedSections, title]);
@@ -180,7 +184,8 @@ const Editor = () => {
                                         const newTitle = match ? match[1].trim() : "";
                                         // Remove all H1s at the top for section splitting
                                         const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
-                                        const newContents = cleanedMarkdown.split(SECTION_DELIMITER);
+                                        // Split on two or more newlines to get section contents
+                                        const newContents = cleanedMarkdown.split(/\n{2,}/);
                                         const updatedSections = sections.map((section, idx) => {
                                             const content = newContents[idx] !== undefined ? newContents[idx] : "";
                                             // Extract first H2 as section title

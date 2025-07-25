@@ -66,10 +66,9 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             // Add section to sections and selections
             const newSections = [...state.draft.sections, section];
             const newSelections = [...state.draft.selections, section.id];
-            // Rebuild markdown
+            // Rebuild markdown using two newlines between sections
             const title = state.draft.title || "";
-            const SECTION_DELIMITER = "\u2063";
-            let newMarkdown = newSections.filter(s => newSelections.includes(s.id)).map(s => s.content).join(SECTION_DELIMITER);
+            let newMarkdown = newSections.filter(s => newSelections.includes(s.id)).map(s => s.content.trim()).join('\n\n');
             if (title && title.trim()) {
                 newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
             }
