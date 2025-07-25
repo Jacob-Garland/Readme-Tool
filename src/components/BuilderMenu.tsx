@@ -3,7 +3,7 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button, VStack, HStack, Icon, Box, Heading, Field, Portal, Select, createListCollection } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
-import BadgeForm from "./BadgeForm";
+import BadgeForm from "./ui/BadgeForm";
 import TitleButton from "./ui/TitleButton";
 
 // Pre-Built Sections
@@ -124,7 +124,6 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
                           collection={sectionTitles}
                           onValueChange={({value}) => field.onChange(value)}
                           onInteractOutside={() => field.onBlur()}
-                          multiple
                           variant={"subtle"}
                           w={"60"}
                         >

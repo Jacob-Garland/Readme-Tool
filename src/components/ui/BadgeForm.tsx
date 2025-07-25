@@ -9,7 +9,7 @@ import {
   Textarea,
 } from "@chakra-ui/react";
 import React, { useRef, useState } from "react";
-import { toaster } from "./ui/toaster";
+import { toaster } from "./toaster";
 import { DiamondPlus } from "lucide-react";
 
 interface BadgeFormProps {

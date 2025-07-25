@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Code } from '@chakra-ui/react';
 import BackButton from './ui/BackButton';
 import HeaderMenu from './ui/HeaderMenu';
-import StatusIndicator from './ui/StatusIndicator';
+import StatusIndicator from '../hooks/StatusIndicator';
 
 interface HeaderProps {
   markdown: string;

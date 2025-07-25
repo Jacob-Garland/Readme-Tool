@@ -8,7 +8,7 @@ import BuilderMenu from "../components/BuilderMenu";
 import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
-import DynamicTOC from "../components/DynamicTOC";
+import DynamicTOC from "../hooks/DynamicTOC";
 import { useAppStore } from "../stores/appStore";
 import { useEditorStore } from "../stores/editorStore";
 import type { Draft, Section } from "../types/types";

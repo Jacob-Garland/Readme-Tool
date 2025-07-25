@@ -1,6 +1,6 @@
 import { HStack, Spinner, Status, Text } from '@chakra-ui/react';
 import React, { useEffect, useRef, useState } from 'react';
-import { useEditorStore } from '../../stores/editorStore';
+import { useEditorStore } from '../stores/editorStore';
 
 // This component shows a loading spinner or a status indicator based on the saveStatus in the store
 // Shows a live-updating timer for seconds since last save, resets on save
