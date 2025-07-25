@@ -17,6 +17,7 @@ const Editor = () => {
     const sections = useEditorStore((s) => s.draft.sections);
     const checkedSections = useEditorStore((s) => s.draft.selections);
     const markdown = useEditorStore((s) => s.draft.markdown);
+    // Extract title from markdown (first H1) and keep it in sync
     const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
@@ -101,6 +102,8 @@ const Editor = () => {
         if (title && title.trim()) {
             newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
         }
+        // Remove duplicate H1s at the top (if user manually edits)
+        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, title && title.trim() ? `# ${title.trim()}\n\n` : "");
         setDraft({ ...draft, markdown: newMarkdown });
     }, [sections, checkedSections, title]);
 
@@ -184,13 +187,17 @@ const Editor = () => {
                                 <MonacoEditorWrapper
                                     value={markdown}
                                     onChange={(val) => {
-                                        const newContents = val.split(SECTION_DELIMITER);
-                                        // Update each section's content in the store
+                                        // Extract H1 as title, update draft.title, and update sections
+                                        const match = val.match(/^# (.+)$/m);
+                                        const newTitle = match ? match[1].trim() : "";
+                                        // Remove all H1s at the top for section splitting
+                                        const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
+                                        const newContents = cleanedMarkdown.split(SECTION_DELIMITER);
                                         const updatedSections = sections.map((section, idx) => ({
                                             ...section,
                                             content: newContents[idx] !== undefined ? newContents[idx] : ""
                                         }));
-                                        setDraft({ ...draft, sections: updatedSections });
+                                        setDraft({ ...draft, sections: updatedSections, title: newTitle });
                                     }}
                                     height="77vh"
                                     width="75%"
@@ -210,6 +217,7 @@ const Editor = () => {
                                         checkedSections={checkedSections}
                                         onToggle={handleToggleSection}
                                         onReorder={handleReorderSections}
+                                        title={draft.title}
                                     />
                                 </Box>
                             </HStack>
@@ -257,6 +265,7 @@ const Editor = () => {
                                         checkedSections={checkedSections}
                                         onToggle={handleToggleSection}
                                         onReorder={handleReorderSections}
+                                        title={draft.title}
                                     />
                                 </Box>
                             </HStack>

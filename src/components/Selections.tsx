@@ -1,8 +1,8 @@
 import { CheckboxCard, VStack, Heading, IconButton } from "@chakra-ui/react";
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
+import { CSS } from '@dnd-kit/utilities';
 import React from "react";
 
 interface SelectionsProps {
@@ -11,6 +11,7 @@ interface SelectionsProps {
   onToggle: (id: string, checked: boolean) => void;
   onReorder: (newOrder: string[]) => void;
   nonDraggableIds?: string[];
+  title?: string;
 }
 
 function DraggableCard({ id, checked, onToggle, children, draggable }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode; draggable?: boolean }) {
@@ -35,7 +36,7 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
       >
         <CheckboxCard.HiddenInput />
         <CheckboxCard.Control>
-          {draggable !== false && (
+          {draggable !== false ? (
             <IconButton
               aria-label="Drag handle"
               variant="ghost"
@@ -47,7 +48,7 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
             >
               <GripVertical />
             </IconButton>
-          )}
+          ) : null}
           <CheckboxCard.Label mt={2} fontSize={"md"}>{children}</CheckboxCard.Label>
           <CheckboxCard.Indicator />
         </CheckboxCard.Control>
@@ -56,12 +57,28 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
   );
 }
 
-const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [] }) => {
+const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [], title }) => {
   const sensors = useSensors(useSensor(PointerSensor));
+
+  // The title card is always at the top and not draggable
+  const renderTitleCard = title && title.trim() ? (
+    <DraggableCard
+      key="__title__"
+      id="__title__"
+      checked={true}
+      onToggle={() => {}}
+      draggable={false}
+    >
+      {title}
+    </DraggableCard>
+  ) : null;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
+
+    // Prevent reordering the title card
+    if (active.id === "__title__" || over.id === "__title__") return;
 
     const oldIndex = selectedSections.findIndex(id => id === active.id);
     const newIndex = selectedSections.findIndex(id => id === over.id);
@@ -77,17 +94,21 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
           <VStack align="stretch" p={2}>
-            {selectedSections.map((title) => (
-              <DraggableCard
-                key={title}
-                id={title}
-                checked={checkedSections.includes(title)}
-                onToggle={onToggle}
-                draggable={!nonDraggableIds.includes(title)}
-              >
-                {title}
-              </DraggableCard>
-            ))}
+            {renderTitleCard}
+            {selectedSections
+              // Filter out the title if it matches the title prop (avoid duplicate card)
+              .filter(sectionId => !(title && title.trim() && sectionId === title.trim()))
+              .map((sectionId) => (
+                <DraggableCard
+                  key={sectionId}
+                  id={sectionId}
+                  checked={checkedSections.includes(sectionId)}
+                  onToggle={onToggle}
+                  draggable={!nonDraggableIds.includes(sectionId)}
+                >
+                  {sectionId}
+                </DraggableCard>
+              ))}
           </VStack>
         </SortableContext>
       </DndContext>
