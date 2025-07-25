@@ -260,6 +260,12 @@ const Editor = () => {
 
             <BuilderMenu
                 onSectionClick={handleAddSection}
+                onTitleClick={(title) => {
+                  // Remove any existing H1 at the top, then add the new one
+                  let newMarkdown = markdown.replace(/^# .+\n+/, "");
+                  newMarkdown = `# ${title}\n\n` + newMarkdown;
+                  setDraft({ ...draft, markdown: newMarkdown });
+                }}
                 onInsertBadge={handleInsertBadge}
                 onInsertMarkdownComponent={handleInsertMarkdownComponent}
                 selections={checkedSections}

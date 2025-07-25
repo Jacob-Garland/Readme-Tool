@@ -49,6 +49,7 @@ const markdownComponentTitles = createListCollection({
 
 interface BuilderMenuProps {
   onSectionClick?: (section: string) => void;
+  onTitleClick?: (title: string) => void;
   onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
   onInsertMarkdownComponent?: (section: string) => void;
   selections: string[];
@@ -60,7 +61,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
+const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
   const { handleSubmit, formState: { errors }, control } = useForm<FormValues>();
 
   const onSubmit = handleSubmit((data) => {
@@ -97,9 +98,9 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onInsertBadge
             Builder Menu
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
-              <TitleButton onClick={() => {
-                if (onSectionClick) {
-                  onSectionClick('Title');
+              <TitleButton onClick={(title) => {
+                if (onTitleClick && title) {
+                  onTitleClick(title);
                 }
               }} />
               <BadgeForm onInsert={onInsertBadge} selections={selections} />
