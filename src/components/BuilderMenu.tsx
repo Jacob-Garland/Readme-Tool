@@ -3,10 +3,10 @@ import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button, VStack, HStack, Icon, Box, Heading, Field, Portal, Select, createListCollection } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
-import SectionButton from "./ui/SectionButton";
 import { useEditorStore } from "../stores/editorStore";
-import BadgeForm from "./ui/BadgeForm";
 import TitleButton from "./ui/TitleButton";
+import BadgeFormButton from "./ui/BadgeForm";
+import SectionButton from "./ui/SectionButton";
 
 // Pre-Built Sections
 const sectionTitles = createListCollection({
@@ -89,7 +89,7 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
         bg={{ _light: "purple.100" , _dark: "purple.900" }} 
         overflowY={"auto"}
     >
-        <Heading size="xl" textAlign="center" mt={2}>
+        <Heading size="2xl" textAlign="center" mt={2}>
             Builder Menu
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
@@ -98,13 +98,12 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
                   onTitleClick(title);
                 }
               }} />
-              <BadgeForm onInsert={onInsertBadge} selections={selections} />
-
+              <BadgeFormButton onInsert={onInsertBadge} selections={selections} />
               <SectionButton
                 onAddSection={(sectionTitle) => {
                   const addDraftSection = useEditorStore.getState().addDraftSection;
-                  // Generate a unique id for the section (could use title or a uuid)
-                  const id = sectionTitle;
+                  // Generate a unique id for the section (use crypto.randomUUID if available, else timestamp)
+                  const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
                   const newSection = {
                     id,
                     title: sectionTitle,
@@ -114,13 +113,13 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
                 }}
               />
 
-              <Heading size="lg" textAlign="center">
+              <Heading size="xl" textAlign="center" mt={4}>
                 Pre-Built Sections
               </Heading>
               <form onSubmit={onSubmit}>
                 <HStack gap={2} alignItems="center">
                   <Field.Root invalid={!!errors.section} w={"80%"}>
-                    <Field.Label>Pre-Built Sections</Field.Label>
+                    <Field.Label>Select one and add it to your file</Field.Label>
                     <Controller
                       name="section"
                       control={control}
@@ -167,13 +166,13 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
                 </HStack>
               </form>
 
-              <Heading size="lg" textAlign="center" mt={4}>
+              <Heading size="xl" textAlign="center" mt={4}>
                 Markdown Components
               </Heading>
               <form onSubmit={onSubmit}>
                 <HStack gap={2} alignItems="center">
                   <Field.Root invalid={!!errors.markdownComponent} w={"80%"}>
-                    <Field.Label>Markdown Components</Field.Label>
+                    <Field.Label>Pre-made in Markdown syntax</Field.Label>
                     <Controller
                       name="markdownComponent"
                       control={control}

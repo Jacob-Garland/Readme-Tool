@@ -17,7 +17,7 @@ interface BadgeFormProps {
   selections: string[];
 }
 
-const BadgeForm: React.FC<BadgeFormProps> = ({ onInsert, selections }) => {
+const BadgeFormButton: React.FC<BadgeFormProps> = ({ onInsert, selections }) => {
     const baseURL = "https://img.shields.io/badge/";
     const labelRef = useRef<HTMLInputElement>(null);
     const messageRef = useRef<HTMLInputElement>(null);
@@ -147,4 +147,4 @@ const BadgeForm: React.FC<BadgeFormProps> = ({ onInsert, selections }) => {
   )
 }
 
-export default BadgeForm;
+export default BadgeFormButton;

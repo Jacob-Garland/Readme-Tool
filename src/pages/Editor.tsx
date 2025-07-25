@@ -188,15 +188,31 @@ const Editor = () => {
                                         const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
                                         // Split on two or more newlines to get section contents
                                         const newContents = cleanedMarkdown.split(/\n{2,}/);
-                                        const updatedSections = sections.map((section, idx) => {
-                                            const content = newContents[idx] !== undefined ? newContents[idx] : "";
+                                        // Map newContents to sections, matching by H2 title if possible
+                                        const updatedSections = newContents.map((content, idx) => {
                                             // Extract first H2 as section title
                                             const h2Match = content.match(/^##\s+(.+)$/m);
-                                            return {
-                                                ...section,
-                                                content,
-                                                title: h2Match ? h2Match[1].trim() : section.title,
-                                            };
+                                            const parsedTitle = h2Match ? h2Match[1].trim() : "";
+                                            // Try to find a section with this title (skip file title)
+                                            let existing = parsedTitle ? sections.find(s => s.title === parsedTitle) : undefined;
+                                            // If not found, fall back to array index
+                                            if (!existing) existing = sections[idx];
+                                            const title = parsedTitle || (existing ? existing.title : "");
+                                            if (existing) {
+                                                return {
+                                                    ...existing,
+                                                    content: content || existing.content,
+                                                    title,
+                                                };
+                                            } else {
+                                                // New section: generate unique id
+                                                const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                                                return {
+                                                    id,
+                                                    title,
+                                                    content,
+                                                };
+                                            }
                                         });
                                         // Always keep the title in selections, replacing the old one if needed
                                         let selections = draft.selections.filter(t => t !== draft.title);
