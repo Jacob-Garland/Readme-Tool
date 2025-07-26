@@ -55,7 +55,7 @@ const Selections: React.FC = () => {
   const sections = useEditorStore((s) => s.draft.sections);
   const title = useEditorStore((s) => s.draft.title);
   const reorderSections = useEditorStore((s) => s.reorderSections);
-  const setDraft = useEditorStore((s) => s.setDraft);
+  const toggleSectionSelection = useEditorStore((s) => s.toggleSectionSelection);
   const nonDraggableIds: string[] = [];
 
   const selectedSections = sections.map(s => s.id);
@@ -72,17 +72,7 @@ const Selections: React.FC = () => {
   };
 
   const handleToggle = (id: string, checked: boolean) => {
-    let selections = checkedSections;
-    if (checked) {
-      if (!checkedSections.includes(id)) {
-        selections = [...checkedSections, id];
-      }
-    } else {
-      selections = checkedSections.filter(t => t !== id);
-    }
-    // Use the current draft from the store
-    const draft = useEditorStore.getState().draft;
-    setDraft({ ...draft, selections });
+    toggleSectionSelection(id, checked);
   };
 
   return (
@@ -99,7 +89,7 @@ const Selections: React.FC = () => {
                     key={"__title__"}
                     id={"__title__"}
                     checked={checkedSections.includes("__title__")}
-                    onToggle={() => handleToggle("__title__", !checkedSections.includes("__title__"))}
+                    onToggle={handleToggle}
                     draggable={false}
                 >
                     {title}
@@ -112,7 +102,7 @@ const Selections: React.FC = () => {
                         key={section.id}
                         id={section.id}
                         checked={checkedSections.includes(section.id)}
-                        onToggle={() => handleToggle(section.id, !checkedSections.includes(section.id))}
+                        onToggle={handleToggle}
                         draggable={!nonDraggableIds.includes(section.id)}
                     >
                         {section.title}

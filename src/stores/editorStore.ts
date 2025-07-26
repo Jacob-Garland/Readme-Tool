@@ -11,6 +11,7 @@ type EditorStore = {
     updateDraftSection: (id: string, updates: { title?: string; content?: string }) => void;
     reorderSections: (newOrder: string[]) => void;
     setTitle: (title: string, checked?: boolean) => void;
+    toggleSectionSelection: (id: string, checked: boolean) => void;
     saveDraft: () => Promise<void>;
     // Save functionality
     saveStatus: SaveStatus;
@@ -41,6 +42,25 @@ export const useEditorStore = create<EditorStore>((set, get) => {
     };
 
     return {
+        toggleSectionSelection: (id: string, checked: boolean) => set((state) => {
+            let selections = state.draft.selections;
+            if (checked) {
+                if (!selections.includes(id)) selections = [...selections, id];
+            } else {
+                selections = selections.filter((selId: string) => selId !== id);
+            }
+            return {
+                draft: {
+                    ...state.draft,
+                    selections,
+                    markdown: buildMarkdown({
+                        sections: state.draft.sections,
+                        selections,
+                        title: state.draft.title,
+                    }),
+                },
+            };
+        }),
         draft: {
             sections: [],
             selections: [],
@@ -189,16 +209,12 @@ function buildMarkdown({ sections, selections, title }: BuildMarkdownArgs) {
   const checked = sections.filter(s => selections.includes(s.id));
   const cleanSection = (s: string) => s.replace(/^\n+|\n+$/g, "").trim();
   let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
-  // Only prepend title as H1 if it is checked and not already present as the first non-empty line
   if (title && title.trim() && selections.includes("__title__")) {
-    // Check if the first non-empty line is already the title
-    const lines = newMarkdown.split(/\r?\n/).filter(line => line.trim() !== "");
-    if (!(lines[0] && lines[0].startsWith(`# ${title.trim()}`))) {
-      newMarkdown = `# ${title.trim()}\n\n\n` + newMarkdown.replace(/^\n+/, "");
-    }
+    // Remove all H1s for this title from the markdown, then prepend a single one
+    const h1Regex = new RegExp(`^# ${title.trim()}\\s*\\n*`, 'gm');
+    newMarkdown = newMarkdown.replace(h1Regex, '');
+    newMarkdown = `# ${title.trim()}\n\n\n` + newMarkdown.replace(/^\n+/, "");
   }
-  // Remove duplicate H1s at the top (if user manually edits)
-  newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && selections.includes("__title__")) ? `# ${title.trim()}\n\n\n` : "");
   return newMarkdown;
 }
 
