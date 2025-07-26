@@ -21,7 +21,6 @@ const Editor = () => {
     // Extract title from markdown (first H1) and keep it in sync
     const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
-    const addDraftSection = useEditorStore((s) => s.addDraftSection);
     const updateDraftSection = useEditorStore((s) => s.updateDraftSection);
     const reorderSections = useEditorStore((s) => s.reorderSections);
     // Provide default settings: Git-View
@@ -49,13 +48,6 @@ const Editor = () => {
     const handleSetPreview = (value: boolean | ((prev: boolean) => boolean)) => {
         const next = typeof value === "function" ? value(isGitView) : value;
         setSettings({ ...settings, preview: next });
-    };
-
-    // Handler to add a section from BuilderMenu
-    const handleAddSection = (section: { title: string; content: string }) => {
-        const { title, content } = section;
-        const id = nanoid();
-        addDraftSection({ id, title, content });
     };
 
     // Toggle checked state
@@ -281,15 +273,6 @@ const Editor = () => {
             </Box>
 
             <BuilderMenu
-                onSectionClick={handleAddSection}
-                onTitleClick={(newTitle) => {
-                  // Always keep the title in selections, replacing the old one if needed
-                  let selections = draft.selections.filter(t => t !== draft.title);
-                  if (newTitle && !selections.includes(newTitle)) {
-                    selections = [newTitle, ...selections];
-                  }
-                  setDraft({ ...draft, title: newTitle, selections });
-                }}
                 onInsertBadge={handleInsertBadge}
                 onInsertMarkdownComponent={handleInsertMarkdownComponent}
                 selections={checkedSections}

@@ -52,8 +52,6 @@ const markdownComponentTitles = createListCollection({
 });
 
 interface BuilderMenuProps {
-  onSectionClick?: (section: { id: string; title: string; content: string }) => void;
-  onTitleClick?: (title: string) => void;
   onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
   onInsertMarkdownComponent?: (section: string) => void;
   selections: string[];
@@ -65,24 +63,24 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick, onInsertBadge, onInsertMarkdownComponent, selections }) => {
+const BuilderMenu: React.FC<BuilderMenuProps> = ({ onInsertBadge, onInsertMarkdownComponent, selections }) => {
   const { handleSubmit, formState: { errors }, control } = useForm<FormValues>();
+  const addDraftSection = useEditorStore((s) => s.addDraftSection);
+  const setTitle = useEditorStore((s) => s.setTitle);
 
   const onSubmit = handleSubmit((data) => {
     if (onInsertMarkdownComponent && Array.isArray(data.markdownComponent)) {
       data.markdownComponent.forEach((component) => onInsertMarkdownComponent(component));
     }
-    if (onSectionClick) {
-      data.section.forEach((sectionTitle) => {
-        // Find the template by title
-        const template = templates.find((t: { title: string }) => t.title === sectionTitle);
-        if (template) {
-          const { title, content } = template;
-          const id = nanoid();
-          onSectionClick({ id, title, content });
-        }
-      });
-    }
+    data.section.forEach((sectionTitle) => {
+      // Find the template by title
+      const template = templates.find((t: { title: string }) => t.title === sectionTitle);
+      if (template) {
+        const { title, content } = template;
+        const id = nanoid();
+        addDraftSection({ id, title, content });
+      }
+    });
   });
   
   return (
@@ -104,30 +102,19 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
               <TitleButton onClick={(title) => {
-                if (onTitleClick && title) {
-                  // Always add __title__ to selections if not present
-                  const editorStore = useEditorStore.getState();
-                  const draft = editorStore.draft;
-                  let selections = draft.selections;
-                  if (!selections.includes("__title__")) {
-                    selections = ["__title__", ...selections];
-                  }
-                  editorStore.setDraft({ ...draft, title, selections });
-                  onTitleClick(title);
+                if (title) {
+                  setTitle(title, true);
                 }
               }} />
               <BadgeFormButton onInsert={onInsertBadge} selections={selections} />
               <SectionButton
                 onAddSection={(sectionTitle) => {
-                  const addDraftSection = useEditorStore.getState().addDraftSection;
-                  // Generate a unique id for the section using nanoid
                   const id = nanoid();
-                  const newSection = {
+                  addDraftSection({
                     id,
                     title: sectionTitle,
                     content: `## ${sectionTitle}\n\nType your section here`
-                  };
-                  addDraftSection(newSection);
+                  });
                 }}
               />
 
