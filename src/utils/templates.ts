@@ -1,31 +1,25 @@
 export const templates = [
   {
-    id: "Logo",
     title: "Logo",
     content: `![Logo](paste-your-image-url-here)\n`
   },
   {
-    id: "Introduction",
     title: "About The Project",
     content: `## About The Project\n\nA brief description of your project here, explaining your motivation for building it and what problem it solves.\n\n`
   },
   {
-    id: "Installation",
     title: "Installation",
     content: `## Installation\n\nInstructions here on how to install.\n\n`
   },
   {
-    id: "Usage",
     title: "Usage",
     content: `## Usage\n\nInstructions here on how to use the project.\n\n`
   },
   {
-    id: "Contributing",
     title: "Contributing",
     content: `## Contributing\n\nHere you can explain how others can contribute to your project.\n\n`
   },
   {
-    id: "Tech Stack",
     title: "Technologies Used",
     content: `## Technologies Used\n\nList the technologies used here.\n\n`
   },

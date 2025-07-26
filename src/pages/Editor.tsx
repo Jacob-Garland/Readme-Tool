@@ -52,11 +52,11 @@ const Editor = () => {
     };
 
     // Handler to add a section from BuilderMenu
-    const handleAddSection = (sectionId: string) => {
-        const template = templates.find(t => t.id === sectionId);
-        if (template) {
-            addDraftSection({ ...template });
-        }
+    const handleAddSection = (section: { title: string; content: string }) => {
+        // Always generate a new id for the section
+        const { title, content } = section;
+        const id = nanoid();
+        addDraftSection({ id, title, content });
     };
 
     // Toggle checked state
@@ -192,32 +192,43 @@ const Editor = () => {
                                         const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
                                         // Split on two or more newlines to get section contents
                                         const newContents = cleanedMarkdown.split(/\n{2,}/);
-                                        // Map newContents to sections, always matching by array index (id)
-                                        const updatedSections = newContents.map((content, idx) => {
-                                            const existing = sections[idx];
+                                        // Robustly map newContents to sections by id, preserving ids and checked state
+                                        let updatedSections: Section[] = [];
+                                        let usedIds: Set<string> = new Set();
+                                        for (let idx = 0; idx < newContents.length; idx++) {
+                                            const content = newContents[idx];
                                             // Extract first H2 as section title
                                             const h2Match = content.match(/^##\s+(.+)$/m);
-                                            const title = h2Match ? h2Match[1].trim() : (existing ? existing.title : "");
+                                            const title = h2Match ? h2Match[1].trim() : "";
+                                            // Try to match by id (array index), fallback to unused section
+                                            let existing = sections[idx];
+                                            if (!existing) {
+                                                // Try to find a section with the same title that hasn't been used yet
+                                                const found = sections.find(s => s.title === title && !usedIds.has(s.id));
+                                                if (found) existing = found;
+                                            }
                                             if (existing) {
-                                                return {
+                                                usedIds.add(existing.id);
+                                                updatedSections.push({
                                                     ...existing,
-                                                    content: content || existing.content,
-                                                    title,
-                                                };
+                                                    content,
+                                                    title: title || existing.title,
+                                                });
                                             } else {
                                                 // New section: generate unique id with nanoid
                                                 const id = nanoid();
-                                                return {
+                                                updatedSections.push({
                                                     id,
                                                     title,
                                                     content,
-                                                };
+                                                });
                                             }
-                                        });
-                                        // Always keep the title in selections, replacing the old one if needed
-                                        let selections = draft.selections.filter(t => t !== draft.title);
-                                        if (newTitle && !selections.includes(newTitle)) {
-                                          selections = [newTitle, ...selections];
+                                        }
+                                        // --- Robust title handling ---
+                                        // Always keep __title__ in selections if it was checked before
+                                        let selections = draft.selections;
+                                        if (checkedSections.includes("__title__") && !selections.includes("__title__")) {
+                                            selections = ["__title__", ...selections.filter(id => id !== "__title__")];
                                         }
                                         setDraft({ ...draft, sections: updatedSections, title: newTitle, selections });
                                     }}

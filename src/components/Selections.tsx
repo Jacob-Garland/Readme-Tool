@@ -62,21 +62,7 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
 const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [], title, sections }) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
-  // The title card is always at the top and not draggable
-  const renderTitleCard = title && title.trim() ? (
-    <DraggableCard
-      key="__title__"
-      id="__title__"
-      checked={checkedSections.includes("__title__")}
-      onToggle={() => {
-        const isChecked = checkedSections.includes("__title__");
-        onToggle("__title__", !isChecked);
-      }}
-      draggable={false}
-    >
-      {title}
-    </DraggableCard>
-  ) : null;
+  // Removed unused renderTitleCard
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -99,26 +85,31 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
           <VStack align="stretch" p={2}>
-            {renderTitleCard}
-            {selectedSections
-              // Filter out the title card by id
-              .filter(sectionId => sectionId !== "__title__")
-              .map((sectionId) => {
-                // Find the section object to get the current title
-                const section = sections.find((s) => s.id === sectionId);
-                const sectionTitle = section ? section.title : sectionId;
-                return (
-                  <DraggableCard
-                    key={sectionId}
-                    id={sectionId}
-                    checked={checkedSections.includes(sectionId)}
-                    onToggle={onToggle}
-                    draggable={!nonDraggableIds.includes(sectionId)}
-                  >
-                    {sectionTitle}
-                  </DraggableCard>
-                );
-              })}
+            {/* Render title card if present and always use id for checked state */}
+            {title && (
+                <DraggableCard
+                    key={"__title__"}
+                    id={"__title__"}
+                    checked={checkedSections.includes("__title__")}
+                    onToggle={() => onToggle("__title__", !checkedSections.includes("__title__"))}
+                    draggable={false}
+                >
+                    {title}
+                </DraggableCard>
+            )}
+            {sections
+                .filter(section => section.id !== "__title__")
+                .map((section) => (
+                    <DraggableCard
+                        key={section.id}
+                        id={section.id}
+                        checked={checkedSections.includes(section.id)}
+                        onToggle={() => onToggle(section.id, !checkedSections.includes(section.id))}
+                        draggable={!nonDraggableIds.includes(section.id)}
+                    >
+                        {section.title}
+                    </DraggableCard>
+                ))}
           </VStack>
         </SortableContext>
       </DndContext>

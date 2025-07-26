@@ -6,6 +6,7 @@ import { DiamondPlus } from "lucide-react";
 import { useEditorStore } from "../stores/editorStore";
 import { nanoid } from 'nanoid';
 import TitleButton from "./ui/TitleButton";
+import { templates } from '../utils/templates';
 import BadgeFormButton from "./ui/BadgeForm";
 import SectionButton from "./ui/SectionButton";
 
@@ -51,7 +52,7 @@ const markdownComponentTitles = createListCollection({
 });
 
 interface BuilderMenuProps {
-  onSectionClick?: (section: string) => void;
+  onSectionClick?: (section: { id: string; title: string; content: string }) => void;
   onTitleClick?: (title: string) => void;
   onInsertBadge: (markdown: string, opts?: { section?: string }) => void;
   onInsertMarkdownComponent?: (section: string) => void;
@@ -72,7 +73,15 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
       data.markdownComponent.forEach((component) => onInsertMarkdownComponent(component));
     }
     if (onSectionClick) {
-      data.section.forEach((section) => onSectionClick(section));
+      data.section.forEach((sectionTitle) => {
+        // Find the template by title
+        const template = templates.find((t: { title: string }) => t.title === sectionTitle);
+        if (template) {
+          const { title, content } = template;
+          const id = nanoid();
+          onSectionClick({ id, title, content });
+        }
+      });
     }
   });
   
@@ -96,6 +105,14 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
             <VStack gap={2} p={4} alignItems="center">
               <TitleButton onClick={(title) => {
                 if (onTitleClick && title) {
+                  // Always add __title__ to selections if not present
+                  const editorStore = useEditorStore.getState();
+                  const draft = editorStore.draft;
+                  let selections = draft.selections;
+                  if (!selections.includes("__title__")) {
+                    selections = ["__title__", ...selections];
+                  }
+                  editorStore.setDraft({ ...draft, title, selections });
                   onTitleClick(title);
                 }
               }} />
