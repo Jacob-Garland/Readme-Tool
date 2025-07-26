@@ -4,6 +4,7 @@ import { z } from "zod";
 import { Button, VStack, HStack, Icon, Box, Heading, Field, Portal, Select, createListCollection } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
 import { useEditorStore } from "../stores/editorStore";
+import { nanoid } from 'nanoid';
 import TitleButton from "./ui/TitleButton";
 import BadgeFormButton from "./ui/BadgeForm";
 import SectionButton from "./ui/SectionButton";
@@ -102,8 +103,8 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onSectionClick, onTitleClick,
               <SectionButton
                 onAddSection={(sectionTitle) => {
                   const addDraftSection = useEditorStore.getState().addDraftSection;
-                  // Generate a unique id for the section (use crypto.randomUUID if available, else timestamp)
-                  const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                  // Generate a unique id for the section using nanoid
+                  const id = nanoid();
                   const newSection = {
                     id,
                     title: sectionTitle,

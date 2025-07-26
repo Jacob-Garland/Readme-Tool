@@ -1,4 +1,5 @@
 import { Tabs, Box, Flex, HStack } from "@chakra-ui/react";
+import { nanoid } from 'nanoid';
 import { useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -201,8 +202,8 @@ const Editor = () => {
                                                     title,
                                                 };
                                             } else {
-                                                // New section: generate unique id
-                                                const id = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `section-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+                                                // New section: generate unique id with nanoid
+                                                const id = nanoid();
                                                 return {
                                                     id,
                                                     title,

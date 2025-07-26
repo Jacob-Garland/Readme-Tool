@@ -67,10 +67,10 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
     <DraggableCard
       key="__title__"
       id="__title__"
-      checked={checkedSections.includes(title)}
+      checked={checkedSections.includes("__title__")}
       onToggle={() => {
-        const isChecked = checkedSections.includes(title);
-        onToggle(title, !isChecked);
+        const isChecked = checkedSections.includes("__title__");
+        onToggle("__title__", !isChecked);
       }}
       draggable={false}
     >
@@ -101,8 +101,8 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
           <VStack align="stretch" p={2}>
             {renderTitleCard}
             {selectedSections
-              // Filter out the title if it matches the title prop (avoid duplicate card)
-              .filter(sectionId => !(title && title.trim() && sectionId === title.trim()))
+              // Filter out the title card by id
+              .filter(sectionId => sectionId !== "__title__")
               .map((sectionId) => {
                 // Find the section object to get the current title
                 const section = sections.find((s) => s.id === sectionId);
