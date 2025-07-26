@@ -66,7 +66,6 @@ type FormValues = z.infer<typeof formSchema>;
 const BuilderMenu: React.FC<BuilderMenuProps> = ({ onInsertBadge, onInsertMarkdownComponent, selections }) => {
   const { handleSubmit, formState: { errors }, control } = useForm<FormValues>();
   const addDraftSection = useEditorStore((s) => s.addDraftSection);
-  const setTitle = useEditorStore((s) => s.setTitle);
 
   const onSubmit = handleSubmit((data) => {
     if (onInsertMarkdownComponent && Array.isArray(data.markdownComponent)) {
@@ -101,22 +100,9 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onInsertBadge, onInsertMarkdo
             Builder Menu
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
-              <TitleButton onClick={(title) => {
-                if (title) {
-                  setTitle(title, true);
-                }
-              }} />
+              <TitleButton />
               <BadgeFormButton onInsert={onInsertBadge} selections={selections} />
-              <SectionButton
-                onAddSection={(sectionTitle) => {
-                  const id = nanoid();
-                  addDraftSection({
-                    id,
-                    title: sectionTitle,
-                    content: `## ${sectionTitle}\n\nType your section here`
-                  });
-                }}
-              />
+              <SectionButton />
 
               <Heading size="xl" textAlign="center" mt={4}>
                 Pre-Built Sections

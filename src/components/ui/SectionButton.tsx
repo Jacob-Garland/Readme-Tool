@@ -1,19 +1,23 @@
 import React, { useRef, useState } from "react";
 import { Button, Icon, Popover, Portal, Stack, Input, Box } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
+import { useEditorStore } from "../../stores/editorStore";
+import { nanoid } from "nanoid";
 
-interface SectionButtonProps {
-  onAddSection: (sectionTitle: string) => void;
-}
-
-const SectionButton: React.FC<SectionButtonProps> = ({ onAddSection }) => {
+const SectionButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const addDraftSection = useEditorStore((s) => s.addDraftSection);
 
   const handleAdd = () => {
     if (inputValue.trim()) {
-      onAddSection(inputValue.trim());
+      const id = nanoid();
+      addDraftSection({
+        id,
+        title: inputValue.trim(),
+        content: `## ${inputValue.trim()}\n\nType your section here`,
+      });
       setInputValue("");
       setIsOpen(false);
     }

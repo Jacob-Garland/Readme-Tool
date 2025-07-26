@@ -1,19 +1,17 @@
 import React, { useRef, useState } from "react";
 import { Button, Icon, Popover, Portal, Stack, Input, Box } from "@chakra-ui/react";
 import { DiamondPlus } from "lucide-react";
+import { useEditorStore } from "../../stores/editorStore";
 
-interface TitleButtonProps {
-  onClick: (title: string) => void;
-}
-
-const TitleButton: React.FC<TitleButtonProps> = ({ onClick }) => {
+const TitleButton: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const setTitle = useEditorStore((s) => s.setTitle);
 
   const handleAdd = () => {
     if (inputValue.trim()) {
-      onClick(inputValue.trim());
+      setTitle(inputValue.trim(), true);
       setInputValue("");
       setIsOpen(false);
     }
