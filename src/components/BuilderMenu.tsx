@@ -72,12 +72,17 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onInsertBadge, onInsertMarkdo
       data.markdownComponent.forEach((component) => onInsertMarkdownComponent(component));
     }
     data.section.forEach((sectionTitle) => {
-      // Find the template by title
-      const template = templates.find((t: { title: string }) => t.title === sectionTitle);
-      if (template) {
-        const { title, content } = template;
-        const id = nanoid();
-        addDraftSection({ id, title, content });
+      if (sectionTitle === "Table of Contents") {
+        // Add ToC section with id 'toc', store will handle content
+        addDraftSection({ id: "toc", title: "Table of Contents", content: "" });
+      } else {
+        // Find the template by title
+        const template = templates.find((t: { title: string }) => t.title === sectionTitle);
+        if (template) {
+          const { title, content } = template;
+          const id = nanoid();
+          addDraftSection({ id, title, content });
+        }
       }
     });
   });

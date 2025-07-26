@@ -1,6 +1,5 @@
 import { Tabs, Box, Flex, HStack } from "@chakra-ui/react";
 import { nanoid } from 'nanoid';
-import { useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
@@ -9,7 +8,6 @@ import BuilderMenu from "../components/BuilderMenu";
 import Selections from "../components/Selections";
 import PreviewSwitch from "../components/ui/PreviewSwitch";
 import { templates } from "../utils/templates";
-import DynamicTOC from "../hooks/DynamicTOC";
 import { useAppStore } from "../stores/appStore";
 import { useEditorStore } from "../stores/editorStore";
 import type { Draft, Section } from "../types/types";
@@ -21,7 +19,6 @@ const Editor = () => {
     // Extract title from markdown (first H1) and keep it in sync
     const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
-    const updateDraftSection = useEditorStore((s) => s.updateDraftSection);
     // Provide default settings: Git-View
     const settings = useAppStore((s) => s.settings) || { preview: true };
     const isGitView = settings.preview ?? true;
@@ -34,24 +31,11 @@ const Editor = () => {
         title,
     };
 
-    // Helper to update the TOC section content dynamically
-    const updateTOCSection = useCallback((tocMarkdown: string) => {
-        const tocSection = sections.find(s => s.title === "Table of Contents");
-        if (!tocSection) return;
-        if (tocSection.content === tocMarkdown) return;
-        updateDraftSection(tocSection.id, { content: tocMarkdown });
-    }, [sections, updateDraftSection]);
-
-
     // Handler to update preview mode in settings
     const handleSetPreview = (value: boolean | ((prev: boolean) => boolean)) => {
         const next = typeof value === "function" ? value(isGitView) : value;
         setSettings({ ...settings, preview: next });
     };
-
-    // --- Dynamic TOC logic ---
-    // Only render and update TOC if "Table of Contents" is in checkedSections
-    const showTOC = checkedSections.includes("Table of Contents");
 
     // Handler to insert badge markdown into the editor
     function handleInsertBadge(badgeMarkdown: string, opts?: { section?: string }) {
@@ -69,8 +53,8 @@ const Editor = () => {
     }
 
     // Handler to insert markdown component directly into markdown (not sections)
-    function handleInsertMarkdownComponent(componentId: string) {
-        const template = templates.find(t => t.id === componentId);
+    function handleInsertMarkdownComponent(componentTitle: string) {
+        const template = templates.find(t => t.title === componentTitle);
         if (template) {
             setDraft({ ...draft, markdown: markdown + (markdown.trim() ? "\n" : "") + template.content + "\n" });
         }
@@ -79,13 +63,6 @@ const Editor = () => {
     return (
         <>
         <Header markdown={markdown} />
-        {/* Dynamic TOC logic: updates the TOC section whenever sections or order change */}
-        {showTOC && (
-            <DynamicTOC
-                sections={sections.filter(s => checkedSections.includes(s.id))}
-                onUpdateTOC={updateTOCSection}
-            />
-        )}
         <Flex w="100%" px={[0, 2, 6]} py={2} direction={["column", "row"]} align="flex-start" justify="center" gap={4} flex="1 1 0%" minH="0">
             <Box
                 w={["100%", "100%", "80%"]}

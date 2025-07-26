@@ -3,6 +3,7 @@ import { createTauriStore, setAutosave, clearAutosave } from '@tauri-store/zusta
 import type { Draft, SaveStatus } from '../types/types';
 
 type EditorStore = {
+    updateTOCSection: () => void;
     // Draft management
     draft: Draft;
     setDraft: (draft: Draft) => void;
@@ -41,7 +42,39 @@ export const useEditorStore = create<EditorStore>((set, get) => {
         }, 15000);
     };
 
+    // Helper to generate ToC markdown
+    function generateTOCMarkdown(sections: { id: string; title: string }[]) {
+      const filtered = sections.filter(
+        (s) =>
+          s.title !== "Table of Contents" &&
+          s.title !== "Title" &&
+          s.id !== "Table of Contents" &&
+          s.id !== "Title" &&
+          s.id !== "Project Title" &&
+          s.id !== "toc"
+      );
+      const toAnchor = (t: string) =>
+        `#${t.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-")}`;
+      const tocLinks = filtered.map((s) => `- [${s.title}](${toAnchor(s.title)})`);
+      return `## Table of Contents\n\n${tocLinks.join("\n")}\n\n`;
+    }
+
+    // Action to update the ToC section content in the draft
+    function updateTOCSectionInDraft(draft: Draft): Draft {
+      const tocIndex = draft.sections.findIndex(s => s.id === "toc");
+      if (tocIndex === -1) return draft;
+      const tocContent = generateTOCMarkdown(draft.sections);
+      const newSections = draft.sections.map((s, i) =>
+        i === tocIndex ? { ...s, content: tocContent } : s
+      );
+      return { ...draft, sections: newSections };
+    }
+
     return {
+        updateTOCSection: () => set((state) => {
+            const newDraft = updateTOCSectionInDraft(state.draft);
+            return { draft: newDraft };
+        }),
         toggleSectionSelection: (id: string, checked: boolean) => set((state) => {
             let selections = state.draft.selections;
             if (checked) {
@@ -49,14 +82,19 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             } else {
                 selections = selections.filter((selId: string) => selId !== id);
             }
+            // Update ToC before markdown
+            const draftWithTOC = updateTOCSectionInDraft({
+                ...state.draft,
+                selections
+            });
             return {
                 draft: {
-                    ...state.draft,
+                    ...draftWithTOC,
                     selections,
                     markdown: buildMarkdown({
-                        sections: state.draft.sections,
+                        sections: draftWithTOC.sections,
                         selections,
-                        title: state.draft.title,
+                        title: draftWithTOC.title,
                     }),
                 },
             };
@@ -67,7 +105,9 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             markdown: '',
         },
         setDraft: (draft) => {
-            set({ draft });
+            // Always update ToC before setting draft
+            const draftWithTOC = updateTOCSectionInDraft(draft);
+            set({ draft: draftWithTOC });
             isDirty = true;
             if (get().autoSaveEnabled) {
                 debouncedAutosave();
@@ -89,15 +129,21 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             // Add section to sections and selections, always preserve ids
             const newSections = [...state.draft.sections, section];
             const newSelections = [...state.draft.selections, section.id];
+            // Update ToC before markdown
+            const draftWithTOC = updateTOCSectionInDraft({
+                ...state.draft,
+                sections: newSections,
+                selections: Array.from(new Set(newSelections)),
+            });
             return {
                 draft: {
-                    ...state.draft,
+                    ...draftWithTOC,
                     sections: newSections,
                     selections: Array.from(new Set(newSelections)),
                     markdown: buildMarkdown({
-                        sections: newSections,
+                        sections: draftWithTOC.sections,
                         selections: Array.from(new Set(newSelections)),
-                        title: state.draft.title,
+                        title: draftWithTOC.title,
                     }),
                 },
             };
@@ -108,14 +154,19 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             const newSections = state.draft.sections.map(s =>
                 s.id === id ? { ...s, ...updates } : s
             );
+            // Update ToC before markdown
+            const draftWithTOC = updateTOCSectionInDraft({
+                ...state.draft,
+                sections: newSections,
+            });
             return {
                 draft: {
-                    ...state.draft,
+                    ...draftWithTOC,
                     sections: newSections,
                     markdown: buildMarkdown({
-                        sections: newSections,
-                        selections: state.draft.selections,
-                        title: state.draft.title,
+                        sections: draftWithTOC.sections,
+                        selections: draftWithTOC.selections,
+                        title: draftWithTOC.title,
                     }),
                 },
             };
@@ -137,15 +188,21 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             if (selections.includes("__title__") && !newSelections.includes("__title__")) {
                 newSelections = ["__title__", ...newSelections];
             }
+            // Update ToC before markdown
+            const draftWithTOC = updateTOCSectionInDraft({
+                ...state.draft,
+                sections: newSections,
+                selections: newSelections,
+            });
             return {
                 draft: {
-                    ...state.draft,
+                    ...draftWithTOC,
                     sections: newSections,
                     selections: newSelections,
                     markdown: buildMarkdown({
-                        sections: newSections,
+                        sections: draftWithTOC.sections,
                         selections: newSelections,
-                        title: state.draft.title,
+                        title: draftWithTOC.title,
                     }),
                 },
             };
@@ -157,13 +214,19 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             if (checked) {
                 selections = ["__title__", ...selections];
             }
+            // Update ToC before markdown
+            const draftWithTOC = updateTOCSectionInDraft({
+                ...state.draft,
+                title,
+                selections,
+            });
             return {
                 draft: {
-                    ...state.draft,
+                    ...draftWithTOC,
                     title,
                     selections,
                     markdown: buildMarkdown({
-                        sections: state.draft.sections,
+                        sections: draftWithTOC.sections,
                         selections,
                         title,
                     }),
