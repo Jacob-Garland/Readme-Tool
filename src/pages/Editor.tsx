@@ -188,16 +188,12 @@ const Editor = () => {
                                         const cleanedMarkdown = val.replace(/^(# .+\n+)+/, "");
                                         // Split on two or more newlines to get section contents
                                         const newContents = cleanedMarkdown.split(/\n{2,}/);
-                                        // Map newContents to sections, matching by H2 title if possible
+                                        // Map newContents to sections, always matching by array index (id)
                                         const updatedSections = newContents.map((content, idx) => {
+                                            const existing = sections[idx];
                                             // Extract first H2 as section title
                                             const h2Match = content.match(/^##\s+(.+)$/m);
-                                            const parsedTitle = h2Match ? h2Match[1].trim() : "";
-                                            // Try to find a section with this title (skip file title)
-                                            let existing = parsedTitle ? sections.find(s => s.title === parsedTitle) : undefined;
-                                            // If not found, fall back to array index
-                                            if (!existing) existing = sections[idx];
-                                            const title = parsedTitle || (existing ? existing.title : "");
+                                            const title = h2Match ? h2Match[1].trim() : (existing ? existing.title : "");
                                             if (existing) {
                                                 return {
                                                     ...existing,
