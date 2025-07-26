@@ -22,7 +22,6 @@ const Editor = () => {
     const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
     const updateDraftSection = useEditorStore((s) => s.updateDraftSection);
-    const reorderSections = useEditorStore((s) => s.reorderSections);
     // Provide default settings: Git-View
     const settings = useAppStore((s) => s.settings) || { preview: true };
     const isGitView = settings.preview ?? true;
@@ -48,24 +47,6 @@ const Editor = () => {
     const handleSetPreview = (value: boolean | ((prev: boolean) => boolean)) => {
         const next = typeof value === "function" ? value(isGitView) : value;
         setSettings({ ...settings, preview: next });
-    };
-
-    // Toggle checked state
-    const handleToggleSection = (id: string, checked: boolean) => {
-        let selections = checkedSections;
-        if (checked) {
-            if (!checkedSections.includes(id)) {
-                selections = [...checkedSections, id];
-            }
-        } else {
-            selections = checkedSections.filter(t => t !== id);
-        }
-        setDraft({ ...draft, selections });
-    };
-
-    // Reorder sections (affects both checkedSections and sections array order)
-    const handleReorderSections = (newOrder: string[]) => {
-        reorderSections(newOrder);
     };
 
     // --- Dynamic TOC logic ---
@@ -208,14 +189,7 @@ const Editor = () => {
                                     p={4}
                                     boxShadow="md"
                                 >
-                                    <Selections
-                                        selectedSections={sections.map(s => s.id)}
-                                        checkedSections={checkedSections}
-                                        onToggle={handleToggleSection}
-                                        onReorder={handleReorderSections}
-                                        title={draft.title}
-                                        sections={sections}
-                                    />
+                                    <Selections />
                                 </Box>
                             </HStack>
                         </Tabs.Content>
@@ -257,14 +231,7 @@ const Editor = () => {
                                     <Flex justifyContent="center" mb={4}>
                                         <PreviewSwitch isGitView={isGitView} setIsGitView={handleSetPreview} />
                                     </Flex>
-                                    <Selections
-                                        selectedSections={sections.map(s => s.id)}
-                                        checkedSections={checkedSections}
-                                        onToggle={handleToggleSection}
-                                        onReorder={handleReorderSections}
-                                        title={draft.title}
-                                        sections={sections}
-                                    />
+                                    <Selections />
                                 </Box>
                             </HStack>
                         </Tabs.Content>

@@ -4,17 +4,7 @@ import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEn
 import { GripVertical } from 'lucide-react';
 import { CSS } from '@dnd-kit/utilities';
 import React from "react";
-
-import type { Section } from "../types/types";
-interface SelectionsProps {
-  selectedSections: string[];
-  checkedSections: string[];
-  onToggle: (id: string, checked: boolean) => void;
-  onReorder: (newOrder: string[]) => void;
-  nonDraggableIds?: string[];
-  title?: string;
-  sections: Section[];
-}
+import { useEditorStore } from "../stores/editorStore";
 
 function DraggableCard({ id, checked, onToggle, children, draggable }: { id: string; checked: boolean; onToggle: (id: string, checked: boolean) => void; children: React.ReactNode; draggable?: boolean }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -59,22 +49,40 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
   );
 }
 
-const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSections, onToggle, onReorder, nonDraggableIds = [], title, sections }) => {
+const Selections: React.FC = () => {
   const sensors = useSensors(useSensor(PointerSensor));
+  const checkedSections = useEditorStore((s) => s.draft.selections);
+  const sections = useEditorStore((s) => s.draft.sections);
+  const title = useEditorStore((s) => s.draft.title);
+  const reorderSections = useEditorStore((s) => s.reorderSections);
+  const setDraft = useEditorStore((s) => s.setDraft);
+  const nonDraggableIds: string[] = [];
 
-  // Removed unused renderTitleCard
+  const selectedSections = sections.map(s => s.id);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
-
     // Prevent reordering the title card
     if (active.id === "__title__" || over.id === "__title__") return;
-
     const oldIndex = selectedSections.findIndex(id => id === active.id);
     const newIndex = selectedSections.findIndex(id => id === over.id);
     const newOrder = arrayMove(selectedSections, oldIndex, newIndex);
-    onReorder(newOrder);
+    reorderSections(newOrder);
+  };
+
+  const handleToggle = (id: string, checked: boolean) => {
+    let selections = checkedSections;
+    if (checked) {
+      if (!checkedSections.includes(id)) {
+        selections = [...checkedSections, id];
+      }
+    } else {
+      selections = checkedSections.filter(t => t !== id);
+    }
+    // Use the current draft from the store
+    const draft = useEditorStore.getState().draft;
+    setDraft({ ...draft, selections });
   };
 
   return (
@@ -91,7 +99,7 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
                     key={"__title__"}
                     id={"__title__"}
                     checked={checkedSections.includes("__title__")}
-                    onToggle={() => onToggle("__title__", !checkedSections.includes("__title__"))}
+                    onToggle={() => handleToggle("__title__", !checkedSections.includes("__title__"))}
                     draggable={false}
                 >
                     {title}
@@ -104,7 +112,7 @@ const Selections: React.FC<SelectionsProps> = ({ selectedSections, checkedSectio
                         key={section.id}
                         id={section.id}
                         checked={checkedSections.includes(section.id)}
-                        onToggle={() => onToggle(section.id, !checkedSections.includes(section.id))}
+                        onToggle={() => handleToggle(section.id, !checkedSections.includes(section.id))}
                         draggable={!nonDraggableIds.includes(section.id)}
                     >
                         {section.title}
