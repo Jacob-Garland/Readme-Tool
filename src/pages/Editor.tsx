@@ -1,6 +1,6 @@
 import { Tabs, Box, Flex, HStack } from "@chakra-ui/react";
 import { nanoid } from 'nanoid';
-import { useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Header from "../components/Header";
@@ -22,6 +22,8 @@ const Editor = () => {
     const title = useEditorStore((s) => s.draft.title || "");
     const setDraft = useEditorStore((s) => s.setDraft);
     const addDraftSection = useEditorStore((s) => s.addDraftSection);
+    const updateDraftSection = useEditorStore((s) => s.updateDraftSection);
+    const reorderSections = useEditorStore((s) => s.reorderSections);
     // Provide default settings: Git-View
     const settings = useAppStore((s) => s.settings) || { preview: true };
     const isGitView = settings.preview ?? true;
@@ -36,13 +38,11 @@ const Editor = () => {
 
     // Helper to update the TOC section content dynamically
     const updateTOCSection = useCallback((tocMarkdown: string) => {
-        const idx = sections.findIndex(s => s.id === "Table of Contents");
-        if (idx === -1) return;
-        if (sections[idx].content === tocMarkdown) return;
-        const updated = [...sections];
-        updated[idx] = { ...updated[idx], content: tocMarkdown };
-        setDraft({ ...draft, sections: updated });
-    }, [sections, draft, setDraft]);
+        const tocSection = sections.find(s => s.title === "Table of Contents");
+        if (!tocSection) return;
+        if (tocSection.content === tocMarkdown) return;
+        updateDraftSection(tocSection.id, { content: tocMarkdown });
+    }, [sections, updateDraftSection]);
 
 
     // Handler to update preview mode in settings
@@ -53,7 +53,6 @@ const Editor = () => {
 
     // Handler to add a section from BuilderMenu
     const handleAddSection = (section: { title: string; content: string }) => {
-        // Always generate a new id for the section
         const { title, content } = section;
         const id = nanoid();
         addDraftSection({ id, title, content });
@@ -61,49 +60,21 @@ const Editor = () => {
 
     // Toggle checked state
     const handleToggleSection = (id: string, checked: boolean) => {
+        let selections = checkedSections;
         if (checked) {
             if (!checkedSections.includes(id)) {
-                setDraft({ ...draft, selections: [...checkedSections, id] });
+                selections = [...checkedSections, id];
             }
         } else {
-            setDraft({ ...draft, selections: checkedSections.filter(t => t !== id) });
+            selections = checkedSections.filter(t => t !== id);
         }
+        setDraft({ ...draft, selections });
     };
 
     // Reorder sections (affects both checkedSections and sections array order)
     const handleReorderSections = (newOrder: string[]) => {
-        let newSelections = newOrder.filter(id => checkedSections.includes(id));
-        // If the title was checked before, ensure it stays checked and at the front
-        if (title && checkedSections.includes(title) && !newSelections.includes(title)) {
-            newSelections = [title, ...newSelections];
-        } else if (title && checkedSections.includes(title) && newSelections[0] !== title) {
-            newSelections = [title, ...newSelections.filter(id => id !== title)];
-        }
-        setDraft({
-            ...draft,
-            selections: newSelections,
-            sections: newOrder.map(id => sections.find(s => s.id === id)).filter(Boolean) as Section[],
-        });
+        reorderSections(newOrder);
     };
-
-    // Update markdown when checkedSections or sections change
-    useEffect(() => {
-        // Only include sections that are checked, in the current order of checkedSections
-        const checked = sections.filter(s => checkedSections.includes(s.id));
-        const cleanSection = (s: string) => s.replace(/^\n+|\n+$/g, "").trim();
-        let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
-        // Only prepend title as H1 if it is checked and not already present as the first non-empty line
-        if (title && title.trim() && checkedSections.includes("__title__")) {
-            // Check if the first non-empty line is already the title
-            const lines = newMarkdown.split(/\r?\n/).filter(line => line.trim() !== "");
-            if (!(lines[0] && lines[0].startsWith(`# ${title.trim()}`))) {
-                newMarkdown = `# ${title.trim()}\n\n\n` + newMarkdown.replace(/^\n+/, "");
-            }
-        }
-        // Remove duplicate H1s at the top (if user manually edits)
-        newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && checkedSections.includes("__title__")) ? `# ${title.trim()}\n\n\n` : "");
-        setDraft({ ...draft, markdown: newMarkdown });
-    }, [sections, checkedSections, title]);
 
     // --- Dynamic TOC logic ---
     // Only render and update TOC if "Table of Contents" is in checkedSections

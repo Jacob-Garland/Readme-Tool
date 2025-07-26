@@ -8,6 +8,9 @@ type EditorStore = {
     setDraft: (draft: Draft) => void;
     resetDraft: () => void;
     addDraftSection: (section: { id: string; title: string; content: string }) => void;
+    updateDraftSection: (id: string, updates: { title?: string; content?: string }) => void;
+    reorderSections: (newOrder: string[]) => void;
+    setTitle: (title: string, checked?: boolean) => void;
     saveDraft: () => Promise<void>;
     // Save functionality
     saveStatus: SaveStatus;
@@ -63,22 +66,87 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             clearAutosave();
         },
         addDraftSection: (section) => set((state) => {
-            // Add section to sections and selections
+            // Add section to sections and selections, always preserve ids
             const newSections = [...state.draft.sections, section];
             const newSelections = [...state.draft.selections, section.id];
-            // Rebuild markdown using two newlines between sections
-            const title = state.draft.title || "";
-            let newMarkdown = newSections.filter(s => newSelections.includes(s.id)).map(s => s.content.trim()).join('\n\n');
-            if (title && title.trim()) {
-                newMarkdown = `# ${title.trim()}\n\n` + newMarkdown;
+            return {
+                draft: {
+                    ...state.draft,
+                    sections: newSections,
+                    selections: Array.from(new Set(newSelections)),
+                    markdown: buildMarkdown({
+                        sections: newSections,
+                        selections: Array.from(new Set(newSelections)),
+                        title: state.draft.title,
+                    }),
+                },
+            };
+        }),
+
+        updateDraftSection: (id, updates) => set((state) => {
+            // Update a section by id, preserving id and checked state
+            const newSections = state.draft.sections.map(s =>
+                s.id === id ? { ...s, ...updates } : s
+            );
+            return {
+                draft: {
+                    ...state.draft,
+                    sections: newSections,
+                    markdown: buildMarkdown({
+                        sections: newSections,
+                        selections: state.draft.selections,
+                        title: state.draft.title,
+                    }),
+                },
+            };
+        }),
+
+        reorderSections: (newOrder) => set((state) => {
+            // Always preserve __title__ in selections if it was checked before
+            let selections = state.draft.selections;
+            if (selections.includes("__title__") && !newOrder.includes("__title__")) {
+                newOrder = ["__title__", ...newOrder.filter(id => id !== "__title__")];
             }
-            newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, title && title.trim() ? `# ${title.trim()}\n\n` : "");
+            // Reorder sections array to match newOrder (excluding __title__)
+            const newSections = newOrder
+                .filter(id => id !== "__title__")
+                .map(id => state.draft.sections.find(s => s.id === id))
+                .filter((s): s is { id: string; title: string; content: string } => Boolean(s));
+            // Rebuild selections to match newOrder, always keep __title__ at front if checked
+            let newSelections = newOrder.filter(id => selections.includes(id));
+            if (selections.includes("__title__") && !newSelections.includes("__title__")) {
+                newSelections = ["__title__", ...newSelections];
+            }
             return {
                 draft: {
                     ...state.draft,
                     sections: newSections,
                     selections: newSelections,
-                    markdown: newMarkdown,
+                    markdown: buildMarkdown({
+                        sections: newSections,
+                        selections: newSelections,
+                        title: state.draft.title,
+                    }),
+                },
+            };
+        }),
+
+        setTitle: (title, checked = true) => set((state) => {
+            // Always add __title__ to selections if checked, remove if not
+            let selections = state.draft.selections.filter(id => id !== "__title__");
+            if (checked) {
+                selections = ["__title__", ...selections];
+            }
+            return {
+                draft: {
+                    ...state.draft,
+                    title,
+                    selections,
+                    markdown: buildMarkdown({
+                        sections: state.draft.sections,
+                        selections,
+                        title,
+                    }),
                 },
             };
         }),
@@ -109,6 +177,30 @@ export const useEditorStore = create<EditorStore>((set, get) => {
         },
     };
 });
+
+// Helper to build markdown from sections, selections, and title
+interface BuildMarkdownArgs {
+  sections: { id: string; content: string }[];
+  selections: string[];
+  title?: string;
+}
+function buildMarkdown({ sections, selections, title }: BuildMarkdownArgs) {
+  // Only include sections that are checked, in the current order of checkedSections
+  const checked = sections.filter(s => selections.includes(s.id));
+  const cleanSection = (s: string) => s.replace(/^\n+|\n+$/g, "").trim();
+  let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
+  // Only prepend title as H1 if it is checked and not already present as the first non-empty line
+  if (title && title.trim() && selections.includes("__title__")) {
+    // Check if the first non-empty line is already the title
+    const lines = newMarkdown.split(/\r?\n/).filter(line => line.trim() !== "");
+    if (!(lines[0] && lines[0].startsWith(`# ${title.trim()}`))) {
+      newMarkdown = `# ${title.trim()}\n\n\n` + newMarkdown.replace(/^\n+/, "");
+    }
+  }
+  // Remove duplicate H1s at the top (if user manually edits)
+  newMarkdown = newMarkdown.replace(/^(# .+\n+)+/, (title && title.trim() && selections.includes("__title__")) ? `# ${title.trim()}\n\n\n` : "");
+  return newMarkdown;
+}
 
 // For Tauri persistence and multi-window sync
 export const tauriHandler = createTauriStore('editor-store', useEditorStore);
