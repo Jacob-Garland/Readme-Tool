@@ -88,20 +88,22 @@ const Selections: React.FC = () => {
       <Heading m={2} textAlign={"center"}>
         Table Of Contents
       </Heading>
+      {/* Title card always at the top, not draggable */}
+      {title && (
+        <DraggableCard
+          id="__title__"
+          checked={selections.includes("__title__")}
+          onToggle={handleToggle}
+          draggable={false}
+        >
+          <b>{title}</b>
+        </DraggableCard>
+      )}
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext items={selections.filter(id => id !== "__title__")}
           strategy={verticalListSortingStrategy}>
           <VStack align="stretch" p={2}>
-            {title && selections.includes("__title__") && (
-              <DraggableCard
-                id="__title__"
-                checked={true}
-                onToggle={handleToggle}
-                draggable={false}
-              >
-                <b>{title}</b>
-              </DraggableCard>
-            )}
+            {/* Render all sections as draggable cards */}
             {sectionCards.map(section => (
               <DraggableCard
                 key={section.id}
