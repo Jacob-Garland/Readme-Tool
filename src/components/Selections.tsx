@@ -1,5 +1,5 @@
 import { CheckboxCard, VStack, Heading, IconButton } from "@chakra-ui/react";
-import { arrayMove, SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
+import { SortableContext, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragEndEvent } from '@dnd-kit/core';
 import { GripVertical } from 'lucide-react';
 import { CSS } from '@dnd-kit/utilities';
@@ -49,26 +49,34 @@ function DraggableCard({ id, checked, onToggle, children, draggable }: { id: str
   );
 }
 
+
 const Selections: React.FC = () => {
   const sensors = useSensors(useSensor(PointerSensor));
-  const checkedSections = useEditorStore((s) => s.draft.selections);
+  const selections = useEditorStore((s) => s.draft.selections);
   const sections = useEditorStore((s) => s.draft.sections);
   const title = useEditorStore((s) => s.draft.title);
   const reorderSections = useEditorStore((s) => s.reorderSections);
   const toggleSectionSelection = useEditorStore((s) => s.toggleSectionSelection);
-  const nonDraggableIds: string[] = [];
 
-  const selectedSections = sections.map(s => s.id);
+  // Always show all sections as cards (except title if needed)
+  const sectionCards = sections.filter(s => s.id !== "__title__");
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
     // Prevent reordering the title card
-    if (active.id === "__title__" || over.id === "__title__") return;
-    const oldIndex = selectedSections.findIndex(id => id === active.id);
-    const newIndex = selectedSections.findIndex(id => id === over.id);
-    const newOrder = arrayMove(selectedSections, oldIndex, newIndex);
-    reorderSections(newOrder);
+    const activeId = String(active.id);
+    const overId = String(over.id);
+    if (activeId === "__title__" || overId === "__title__") return;
+    const oldIndex = selections.findIndex(id => id === activeId);
+    const newIndex = selections.findIndex(id => id === overId);
+    const newOrder = Array.from(selections);
+    // Only reorder if both are valid
+    if (oldIndex !== -1 && newIndex !== -1) {
+      newOrder.splice(oldIndex, 1);
+      newOrder.splice(newIndex, 0, activeId);
+      reorderSections(newOrder);
+    }
   };
 
   const handleToggle = (id: string, checked: boolean) => {
@@ -81,33 +89,29 @@ const Selections: React.FC = () => {
         Table Of Contents
       </Heading>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={selectedSections} strategy={verticalListSortingStrategy}>
+        <SortableContext items={selections.filter(id => id !== "__title__")}
+          strategy={verticalListSortingStrategy}>
           <VStack align="stretch" p={2}>
-            {/* Render title card if present and always use id for checked state */}
-            {title && (
-                <DraggableCard
-                    key={"__title__"}
-                    id={"__title__"}
-                    checked={checkedSections.includes("__title__")}
-                    onToggle={handleToggle}
-                    draggable={false}
-                >
-                    {title}
-                </DraggableCard>
+            {title && selections.includes("__title__") && (
+              <DraggableCard
+                id="__title__"
+                checked={true}
+                onToggle={handleToggle}
+                draggable={false}
+              >
+                <b>{title}</b>
+              </DraggableCard>
             )}
-            {sections
-                .filter(section => section.id !== "__title__")
-                .map((section) => (
-                    <DraggableCard
-                        key={section.id}
-                        id={section.id}
-                        checked={checkedSections.includes(section.id)}
-                        onToggle={handleToggle}
-                        draggable={!nonDraggableIds.includes(section.id)}
-                    >
-                        {section.title}
-                    </DraggableCard>
-                ))}
+            {sectionCards.map(section => (
+              <DraggableCard
+                key={section.id}
+                id={section.id}
+                checked={selections.includes(section.id)}
+                onToggle={handleToggle}
+              >
+                {section.title}
+              </DraggableCard>
+            ))}
           </VStack>
         </SortableContext>
       </DndContext>

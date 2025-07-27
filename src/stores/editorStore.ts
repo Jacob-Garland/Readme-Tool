@@ -270,8 +270,8 @@ interface BuildMarkdownArgs {
 function buildMarkdown({ sections, selections, title }: BuildMarkdownArgs) {
   // Only include sections that are checked, in the current order of checkedSections
   const checked = sections.filter(s => selections.includes(s.id));
-  const cleanSection = (s: string) => s.replace(/^\n+|\n+$/g, "").trim();
-  let newMarkdown = checked.map(s => cleanSection(s.content)).join('\n\n\n');
+  const cleanSection = (s: { id: string; content: string }) => s.content.replace(/^\n+|\n+$/g, "").trim();
+  let newMarkdown = checked.map(s => cleanSection(s)).join('\n\n\n');
   if (title && title.trim() && selections.includes("__title__")) {
     // Remove all H1s for this title from the markdown, then prepend a single one
     const h1Regex = new RegExp(`^# ${title.trim()}\\s*\\n*`, 'gm');

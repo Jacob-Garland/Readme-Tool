@@ -6,6 +6,7 @@ import { DiamondPlus } from "lucide-react";
 import { useEditorStore } from "../stores/editorStore";
 import { nanoid } from 'nanoid';
 import TitleButton from "./ui/TitleButton";
+import AddTOCButton from "./ui/TOCButton";
 import { templates } from '../utils/templates';
 import BadgeFormButton from "./ui/BadgeForm";
 import SectionButton from "./ui/SectionButton";
@@ -106,6 +107,7 @@ const BuilderMenu: React.FC<BuilderMenuProps> = ({ onInsertBadge, onInsertMarkdo
         </Heading>
             <VStack gap={2} p={4} alignItems="center">
               <TitleButton />
+              <AddTOCButton />
               <BadgeFormButton onInsert={onInsertBadge} selections={selections} />
               <SectionButton />
 
