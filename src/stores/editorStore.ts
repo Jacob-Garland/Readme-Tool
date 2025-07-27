@@ -126,6 +126,29 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             clearAutosave();
         },
         addDraftSection: (section) => set((state) => {
+            // Prevent duplicate ToC section
+            if (section.id === "toc" && state.draft.sections.some(s => s.id === "toc")) {
+                // If already exists, just check it if unchecked
+                let newSelections = state.draft.selections;
+                if (!newSelections.includes("toc")) {
+                    newSelections = [...newSelections, "toc"];
+                }
+                const draftWithTOC = updateTOCSectionInDraft({
+                    ...state.draft,
+                    selections: newSelections,
+                });
+                return {
+                    draft: {
+                        ...draftWithTOC,
+                        selections: newSelections,
+                        markdown: buildMarkdown({
+                            sections: draftWithTOC.sections,
+                            selections: newSelections,
+                            title: draftWithTOC.title,
+                        }),
+                    },
+                };
+            }
             // Add section to sections and selections, always preserve ids
             const newSections = [...state.draft.sections, section];
             const newSelections = [...state.draft.selections, section.id];
@@ -173,16 +196,11 @@ export const useEditorStore = create<EditorStore>((set, get) => {
         }),
 
         reorderSections: (newOrder) => set((state) => {
-            // Always preserve __title__ in selections if it was checked before
+            // Only reorder the selections array (IDs), not the sections array (objects)
             let selections = state.draft.selections;
             if (selections.includes("__title__") && !newOrder.includes("__title__")) {
                 newOrder = ["__title__", ...newOrder.filter(id => id !== "__title__")];
             }
-            // Reorder sections array to match newOrder (excluding __title__)
-            const newSections = newOrder
-                .filter(id => id !== "__title__")
-                .map(id => state.draft.sections.find(s => s.id === id))
-                .filter((s): s is { id: string; title: string; content: string } => Boolean(s));
             // Rebuild selections to match newOrder, always keep __title__ at front if checked
             let newSelections = newOrder.filter(id => selections.includes(id));
             if (selections.includes("__title__") && !newSelections.includes("__title__")) {
@@ -191,13 +209,11 @@ export const useEditorStore = create<EditorStore>((set, get) => {
             // Update ToC before markdown
             const draftWithTOC = updateTOCSectionInDraft({
                 ...state.draft,
-                sections: newSections,
                 selections: newSelections,
             });
             return {
                 draft: {
                     ...draftWithTOC,
-                    sections: newSections,
                     selections: newSelections,
                     markdown: buildMarkdown({
                         sections: draftWithTOC.sections,
