@@ -12,11 +12,10 @@ const SectionButton: React.FC = () => {
 
   const handleAdd = () => {
     if (inputValue.trim()) {
-      const id = nanoid();
       addDraftSection({
-        id,
+        id: nanoid(),
         title: inputValue.trim(),
-        content: `## ${inputValue.trim()}\n\nType your section here`,
+        content: `## ${inputValue.trim()}\n\nType or copy your section here`,
       });
       setInputValue("");
       setIsOpen(false);
