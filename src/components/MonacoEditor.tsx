@@ -1,5 +1,6 @@
 import React from "react";
 import MonacoEditor from "@monaco-editor/react";
+import { useEditorStore } from "../stores/editorStore";
 
 interface MonacoEditorWrapperProps {
   value: string;
@@ -10,10 +11,11 @@ interface MonacoEditorWrapperProps {
 
 const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
   value,
-  onChange,
   height = "77vh",
   width = "75%",
 }) => {
+  const syncSectionsFromMarkdown = useEditorStore((s) => s.syncSectionsFromMarkdown);
+
   return (
     <MonacoEditor
       height={height}
@@ -28,7 +30,9 @@ const MonacoEditorWrapper: React.FC<MonacoEditorWrapperProps> = ({
         scrollBeyondLastLine: false,
         lineNumbers: "on",
       }}
-      onChange={(val) => onChange(val ?? "")}
+      onChange={(val) => {
+        if (val !== undefined) syncSectionsFromMarkdown(val);
+      }}
     />
   );
 };

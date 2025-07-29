@@ -14,6 +14,7 @@ export const remarkSectionIdPlugin: Plugin<[], Root> = () => {
             currentId = node.value.match(/<!-- section-id: (\w+) -->/)?.[1] ?? null;
         } else if (node.type === "heading" && node.depth === 2) {
             if (currentId) {
+                // If we have a currentId, we are in a section
                 const title = (node as Heading).children
                   .map(child => child.type === "text" ? (child as any).value : "")
                   .join("");
@@ -25,6 +26,7 @@ export const remarkSectionIdPlugin: Plugin<[], Root> = () => {
                 currentId = null; // Reset for next section
                 currentContent = []; // Reset content for next section
             } else {
+                // If no id, generate a new one for the section
                 const newId = nanoid();
                 tree.children.splice(index, 0, {
                     type: "html",
