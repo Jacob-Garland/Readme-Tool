@@ -14,7 +14,6 @@ import SectionButton from "./ui/SectionButton";
 // Pre-Built Sections
 const sectionTitles = createListCollection({
   items: [
-     { label: "Table of Contents", value: "Table of Contents" },
      { label: "Introduction", value: "Introduction" },
      { label: "Installation", value: "Installation" },
      { label: "Usage", value: "Usage" },
